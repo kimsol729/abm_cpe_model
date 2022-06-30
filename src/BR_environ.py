@@ -111,7 +111,8 @@ plt.legend()
 
 plt.show()
 # %%
-
-image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..',
-    'result\\batchrun\\environ_isol_300.png')
+image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'../',
+    'result/batchrun/environ_isol_300.png')
 fig.savefig(image_path)
+
+# %%
