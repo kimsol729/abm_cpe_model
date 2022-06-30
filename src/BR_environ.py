@@ -1,4 +1,5 @@
 # %%
+from matplotlib import image
 from CPEmodel import CPE_Model
 from CPEmodel import height, width, getNumSick, getHCWInfec
 from mesa.batchrunner import BatchRunner
@@ -6,6 +7,7 @@ from mesa.batchrunner import BatchRunner
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import os
 import pandas as pd
 import time
 
@@ -52,9 +54,9 @@ fixed_params = {
 
 # %% Specify the variable I want to change separately.
 
-zs = [10, 30, 60, 100, 180] # Change the cleaning Day
-ws = [0, 1] # When a patient is hospotalized, it can be non-infec or infec.
-variable_params = {"cleaningDay" : zs , "isolate_sick" : ws}
+clean_d = [10, 30, 60, 100, 180] # Change the cleaning Day
+iso_TF = [0, 1] # When a patient is hospotalized, it can be non-infec or infec.
+variable_params = {"cleaningDay" : clean_d , "isolate_sick" : iso_TF}
 
 batch_run = BatchRunner(
     CPE_Model,
@@ -91,3 +93,25 @@ mean_patients_sick = data_mean["HCW_related_infecs"] # The avg number for the it
 isolated = data_mean.loc[data_mean['isolate_sick']==1]
 nonisolated = data_mean.loc[data_mean['isolate_sick']==0]
 # %%
+w = 0.4
+zz = np.arange(len(clean_d)) # 0,1,2,3,4
+zi = [i+w for i in np.arange(len(clean_d))] # 0.4, 1.4, 2.4, 3.4, 4.4
+
+z = list(map(str, iso_TF)) # ['0','1']
+
+# %%
+fig = plt.figure()
+plt.bar(zz, nonisolated["HCW_related_infecs"], w, label = "No Isolation")
+plt.bar(zi, isolated["HCW_related_infecs"],w,label = "Isolation")
+plt.xlabel("Days before cleaning enviroment")
+plt.ylabel("Number of HCW related infectious")
+plt.xticks(zz+w/2 , z)
+plt.title("HCW related infectious after {} days ({} iterations)".format(runtime,num_iter))
+plt.legend()
+
+plt.show()
+# %%
+
+image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'..',
+    'result\\batchrun\\environ_isol_300.png')
+fig.savefig(image_path)
