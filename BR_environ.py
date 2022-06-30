@@ -44,10 +44,50 @@ fixed_params = {
     # "isolate_sick" : False,
     "prob_transmission" : 0.00003,
     "isolation_factor" : 0.33,
-    "icu_hcw_wach_rate" : 0.88,
+    "icu_hcw_wash_rate" : 0.88,
     "outside_hcw_wash_rate" : 0.67,
     "height" : height,
     "width" : width 
     }
 
+# %% Specify the variable I want to change separately.
+
+zs = [10, 30, 60, 100, 180] # Change the cleaning Day
+ws = [0, 1] # When a patient is hospotalized, it can be non-infec or infec.
+variable_params = {"cleaningDay" : zs , "isolate_sick" : ws}
+
+batch_run = BatchRunner(
+    CPE_Model,
+    variable_parameters = variable_params,
+    fixed_parameters = fixed_params,
+    iterations=num_iter,
+    max_steps=model.ticks_in_day * runtime,
+    # model_reporters={"Number_of_Patients_sick" : getNumSick}
+    model_reporters={"HCW_related_infecs" : getHCWInfec}
+)
+
+# Running all cases that I want to change.
+batch_run.run_all()
+print("done!!")
+
+
+# %%
+
+run_data = batch_run.get_model_vars_dataframe()
+# print(run_data)
+data_mean = run_data.groupby(["cleaningDay","isolate_sick"])['HCW_related_infecs'].mean()
+print(data_mean)
+print('\n\n')
+data_mean = data_mean.reset_index()
+mean_patients_sick = data_mean["HCW_related_infecs"] # The avg number for the iterations.
+
+
+# %% 오류
+# data_mean.columns
+#     # What is this ??? why interchange names?
+# data_mean = data_mean.rename(columns={'cleaningDay':'isolate_sick','isolate_sick':'cleaningDay'})
+
+# %% 
+isolated = data_mean.loc[data_mean['isolate_sick']==1]
+nonisolated = data_mean.loc[data_mean['isolate_sick']==0]
 # %%
