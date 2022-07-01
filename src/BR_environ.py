@@ -13,7 +13,7 @@ import time
 
 # %%
 num_iter = 1
-runtime = 2
+runtime = 300
 
 start_time = time.time()
 numPatients = 30 # the number of patients is 30
