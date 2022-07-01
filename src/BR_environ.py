@@ -97,7 +97,7 @@ w = 0.4
 zz = np.arange(len(clean_d)) # 0,1,2,3,4
 zi = [i+w for i in np.arange(len(clean_d))] # 0.4, 1.4, 2.4, 3.4, 4.4
 
-z = list(map(str, iso_TF)) # ['0','1']
+z = list(map(str, clean_d)) # ['0','1']
 
 # %%
 fig = plt.figure()
@@ -105,7 +105,7 @@ plt.bar(zz, nonisolated["HCW_related_infecs"], w, label = "No Isolation")
 plt.bar(zi, isolated["HCW_related_infecs"],w,label = "Isolation")
 plt.xlabel("Days before cleaning enviroment")
 plt.ylabel("Number of HCW related infectious")
-plt.xticks(zz+w/2 , z)
+plt.xticks(zz + w/2, z)
 plt.title("HCW related infectious after {} days ({} iterations)".format(runtime,num_iter))
 plt.legend()
 
