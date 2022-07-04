@@ -1,0 +1,5 @@
+,icu_hcw_wash_rate,outside_hcw_wash_rate,Run,HCW_related_infecs,num_HCWs,num_Patients,num_Goo,prob_patient_sick,prob_new_patient,cleaningDay,isolate_sick,prob_transmission,isolation_factor,height,width
+0,0.97,0.96,0,1,4,30,4,0.01,0.003,60,True,0.0003,0.33,11,32
+1,0.97,0.98,1,2,4,30,4,0.01,0.003,60,True,0.0003,0.33,11,32
+2,0.99,0.96,2,0,4,30,4,0.01,0.003,60,True,0.0003,0.33,11,32
+3,0.99,0.98,3,2,4,30,4,0.01,0.003,60,True,0.0003,0.33,11,32
