@@ -19,18 +19,19 @@ height = 11
 numPatients = 30
 numHCW = 2
 numGoo = 4
-def getTotPatients(model):
-    count = 0
-    l = [agent.isPatient for agent in model.schedule.agents]
-    for i in l:
-        if i: # i is patient
-            count += 1
-    return count
+## 현재 병실의 환자가 몇 명 입원해있는지 출력
+# def getTotPatients(model):
+#     count = 0
+#     l = [agent.isPatient for agent in model.schedule.agents]
+#     for i in l:
+#         if i: # i is patient
+#             count += 1
+#     return count
 
 def getNumSick(model):
     """for patients"""
     count = 0
-    l = [(agent.isPatient and agent.colonized) for agent in model.schedule.agents]
+    l = [(agent.isPatient and agent.colonized) for agent in model.schedule.agents] # 모든 agent
     for i in l:
         if i: # i is patient
             count += 1
