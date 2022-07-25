@@ -18,8 +18,8 @@ runtime = 3
 start_time = time.time()
 
 # Parameters
-numHCW = 10
-numPatients = 30 # the number of patients is 30
+# numHCW = 10
+# numPatients = 30 # the number of patients is 30
 numGoo = 30
 probPatientSick = 0.01 # from data # Prob. of being hospitalizes with Infec.
 probNewPatient = 0.003 # 0.053, Old Calibration # 1/2000, 2592 ticks per day
@@ -34,32 +34,31 @@ width=32
 
 # %%
 fixed_params = {
-    "num_HCWs" : numHCW, "num_Patients" : numPatients, "num_Goo" : numGoo, 
     "prob_patient_sick" : probPatientSick, "prob_new_patient" : probNewPatient, "prob_transmission" : probTransmission,
     "isolation_factor" : isolationFactor, # "cleaningDay" : cleanDay, # "isolate_sick" : isolateSick,
     "icu_hcw_wash_rate" : ICUwashrate, "outside_hcw_wash_rate" : OUTSIDEwashrate,
     "height" : height, "width" : width 
     }
 
-# %% Specify the variable I want to change separately.
+# Specify the variable I want to change separately.
+
 a = [10, 30, 60, 100, 180] # Change the cleaning Day
 b = [0, 1] # When a patient is hospotalized, it can be non-infec or infec.
 variable_params = {"cleaningDay" : a , "isolate_sick" : b}
-
+# %% 
 model = CPE_Model(
-    num_HCWs=numHCW ,num_Patients=numPatients, num_Goo=numGoo, 
     prob_patient_sick=probPatientSick,prob_new_patient=probNewPatient, prob_transmission=probTransmission, 
     isolation_factor=isolationFactor,cleaningDay=cleanDay, isolate_sick=True, 
     icu_hcw_wash_rate=ICUwashrate, outside_hcw_wash_rate=OUTSIDEwashrate,
     height=height, width=width
     )
+
 batch_run = BatchRunner(
     CPE_Model,
     variable_parameters = variable_params,
     fixed_parameters = fixed_params,
     iterations=num_iter,
     max_steps=model.ticks_in_day * runtime,
-    # model_reporters={"Number_of_Patients_sick" : getNumSick}
     model_reporters = {"HCW_related_infecs": getHCWInfec, "Number_of_Patients_sick":getNumSick}
 )
 
@@ -70,20 +69,12 @@ print("done!!")
 
 
 # %%
-
 run_data = batch_run.get_model_vars_dataframe()
-# print(run_data)
 data_mean = run_data.groupby(["cleaningDay","isolate_sick"])['HCW_related_infecs'].mean()
 print(data_mean)
 print('\n\n')
 data_mean = data_mean.reset_index()
 mean_patients_sick = data_mean["HCW_related_infecs"] # The avg number for the iterations.
-
-
-# %% 오류
-# data_mean.columns
-#     # What is this ??? why interchange names?
-# data_mean = data_mean.rename(columns={'cleaningDay':'isolate_sick','isolate_sick':'cleaningDay'})
 
 # %% 
 isolated = data_mean.loc[data_mean['isolate_sick']==1]
