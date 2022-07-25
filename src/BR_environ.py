@@ -1,7 +1,7 @@
 # %%
 from matplotlib import image
 from CPEmodel import CPE_Model
-from CPEmodel import height, width, getNumSick, getHCWInfec
+from CPEmodel import getNumSick, getHCWInfec
 from mesa.batchrunner import BatchRunner
 
 import matplotlib.pyplot as plt
@@ -13,51 +13,46 @@ import time
 
 # %%
 num_iter = 1
-runtime = 300
+runtime = 3
 
 start_time = time.time()
-numPatients = 30 # the number of patients is 30
-numHCW = 4
-numGoo = 3
-model = CPE_Model(
-    num_HCWs=numHCW , 
-    num_Patients=numPatients, 
-    num_Goo=numGoo, 
-    prob_new_patient=0.5, 
-    prob_patient_sick=0.01,
-    cleaningDay=40, 
-    prob_transmission=0.1, 
-    isolation_factor=0.5,
-    isolate_sick=True, 
-    icu_hcw_wash_rate=0.9, 
-    outside_hcw_wash_rate=0.9,
-    height=height, 
-    width=width
-    )
 
+# Parameters
+numHCW = 10
+numPatients = 30 # the number of patients is 30
+numGoo = 30
+probPatientSick = 0.01 # from data # Prob. of being hospitalizes with Infec.
+probNewPatient = 0.003 # 0.053, Old Calibration # 1/2000, 2592 ticks per day
+probTransmission = 0.00003
+isolationFactor = 0.33
+cleanDay = 40
+isolateSick = False
+ICUwashrate = 0.88
+OUTSIDEwashrate = 0.67
+height=11
+width=32
+
+# %%
 fixed_params = {
-    "num_HCWs" : numHCW, # 4 HCWs
-    "num_Patients" : numPatients, # 30 patients
-    "num_Goo" : 4, # What is Goo??
-    "prob_patient_sick" : 0.01, # from data # Prob. of being hospitalizes with Infec.
-    "prob_new_patient" : 0.003, # 0.053, Old Calibration
-                               # 1/2000, 2592 ticks per day
-    # "cleaningDay" : 40,
-    # "isolate_sick" : False,
-    "prob_transmission" : 0.00003,
-    "isolation_factor" : 0.33,
-    "icu_hcw_wash_rate" : 0.88,
-    "outside_hcw_wash_rate" : 0.67,
-    "height" : height,
-    "width" : width 
+    "num_HCWs" : numHCW, "num_Patients" : numPatients, "num_Goo" : numGoo, 
+    "prob_patient_sick" : probPatientSick, "prob_new_patient" : probNewPatient, "prob_transmission" : probTransmission,
+    "isolation_factor" : isolationFactor, # "cleaningDay" : cleanDay, # "isolate_sick" : isolateSick,
+    "icu_hcw_wash_rate" : ICUwashrate, "outside_hcw_wash_rate" : OUTSIDEwashrate,
+    "height" : height, "width" : width 
     }
 
 # %% Specify the variable I want to change separately.
+a = [10, 30, 60, 100, 180] # Change the cleaning Day
+b = [0, 1] # When a patient is hospotalized, it can be non-infec or infec.
+variable_params = {"cleaningDay" : a , "isolate_sick" : b}
 
-clean_d = [10, 30, 60, 100, 180] # Change the cleaning Day
-iso_TF = [0, 1] # When a patient is hospotalized, it can be non-infec or infec.
-variable_params = {"cleaningDay" : clean_d , "isolate_sick" : iso_TF}
-
+model = CPE_Model(
+    num_HCWs=numHCW ,num_Patients=numPatients, num_Goo=numGoo, 
+    prob_patient_sick=probPatientSick,prob_new_patient=probNewPatient, prob_transmission=probTransmission, 
+    isolation_factor=isolationFactor,cleaningDay=cleanDay, isolate_sick=True, 
+    icu_hcw_wash_rate=ICUwashrate, outside_hcw_wash_rate=OUTSIDEwashrate,
+    height=height, width=width
+    )
 batch_run = BatchRunner(
     CPE_Model,
     variable_parameters = variable_params,
@@ -65,10 +60,11 @@ batch_run = BatchRunner(
     iterations=num_iter,
     max_steps=model.ticks_in_day * runtime,
     # model_reporters={"Number_of_Patients_sick" : getNumSick}
-    model_reporters={"HCW_related_infecs" : getHCWInfec}
+    model_reporters = {"HCW_related_infecs": getHCWInfec, "Number_of_Patients_sick":getNumSick}
 )
 
 # Running all cases that I want to change.
+print('loading...\n\n')
 batch_run.run_all()
 print("done!!")
 
@@ -94,10 +90,10 @@ isolated = data_mean.loc[data_mean['isolate_sick']==1]
 nonisolated = data_mean.loc[data_mean['isolate_sick']==0]
 # %%
 w = 0.4
-zz = np.arange(len(clean_d)) # 0,1,2,3,4
-zi = [i+w for i in np.arange(len(clean_d))] # 0.4, 1.4, 2.4, 3.4, 4.4
+zz = np.arange(len(a)) # 0,1,2,3,4
+zi = [i+w for i in np.arange(len(a))] # 0.4, 1.4, 2.4, 3.4, 4.4
 
-z = list(map(str, clean_d)) # ['0','1']
+z = list(map(str, a)) # ['0','1']
 
 # %%
 fig = plt.figure()
@@ -114,5 +110,3 @@ plt.show()
 image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'../',
     'result/batchrun/environ_isol_300.png')
 fig.savefig(image_path)
-
-# %%

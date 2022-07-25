@@ -7,7 +7,7 @@ from routes import length_stay
 ICUA = ['A14','A15','A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13']
 ICUB = ['B14','B15','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','B11','B12','B13']
 
-###
+
 def room2coord(room): # Outputs
         
         if len(room) == 2:
@@ -389,10 +389,6 @@ class Patient(CPE_Agent):
 
         self.checkIsolated() #alters state if moved to/from isolated bed
     
-    
-#%%
-
-
 class Environment(CPE_Agent):
     """ An agent with colonized status.
     Cannot move and does not leave."""
@@ -405,18 +401,6 @@ class Environment(CPE_Agent):
         self.isBed = False
         self.isIsolatedBed = False
         self.isWall = False
-        
-
-
-
-class Wall(Environment):
-    """ An agent with colonized status.
-    HCW cannot pass through walls."""
-    def __init__(self, unique_id, model, colonized, x, y):
-        super().__init__(unique_id, model, colonized, x, y)
-        self.isWall = True
-    def step(self):
-        pass
 
 class Bed(Environment):
     """ An agent with colonized status.
@@ -458,10 +442,7 @@ class Bed(Environment):
                     if self.filled and cellmate.positive:
                         self.filledSick = True
                     break # other contents of bed doesn't matter
-    
-        
-    
-    
+
 class IsolatedBed(Bed):
     """ An agent with colonized status.
     Can get contaminated, but cleans after a patient leaves.
@@ -518,7 +499,4 @@ class Goo(Environment):
         if (self.clean_tick <= 0):
             self.handwash()
             self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
-        
-    
-
 # make a patient class, test run

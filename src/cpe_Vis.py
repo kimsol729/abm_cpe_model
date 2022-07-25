@@ -124,11 +124,12 @@ def agent_portrayal(agent):
 
 
 grid = CanvasGrid(agent_portrayal, width, height, 900, 300) #sets the size of grid on screen (does not mean agents will use all)
-chart = ChartModule(
-    [{"Label": "Number of Patients sick", "Color": "#800000"}, 
-    {"Label": "Number of HCW colonized", "Color": "#00FFFF"},
-    #{"Label": "Total number of Patients", "Color": "#D2691E"},
-    {"Label": "HCW related infections", "Color": "black"}
+chart = ChartModule([
+    # [{"Label": "Number of Patients sick", "Color": "#800000"}, 
+    # {"Label": "Number of HCW colonized", "Color": "#00FFFF"},
+    {"Label": "Total number of Patients", "Color": "#D2691E"},
+    {"Label": "Cumulative Patients", "Color": "#black"},
+    # {"Label": "HCW related infections", "Color": "black"}
     ],
     data_collector_name="datacollector"
 )

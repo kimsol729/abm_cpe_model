@@ -1,5 +1,4 @@
 #%%
-"""CPEmodel.py goes with cpe_Vis, so visitPatient() has been deleted"""
 from mesa import Agent, Model
 from mesa.datacollection import DataCollector
 from mesa.time import BaseScheduler, RandomActivation, SimultaneousActivation
@@ -14,29 +13,14 @@ from agents import *
 
 #%%
 
-width = 32
-height = 11
-numPatients = 30
-numHCW = 2
-numGoo = 4
-## 현재 병실의 환자가 몇 명 입원해있는지 출력
-# def getTotPatients(model):
-#     count = 0
-#     l = [agent.isPatient for agent in model.schedule.agents]
-#     for i in l:
-#         if i: # i is patient
-#             count += 1
-#     return count
-
 def getNumSick(model):
     """for patients"""
     count = 0
     l = [(agent.isPatient and agent.colonized) for agent in model.schedule.agents] # 모든 agent
     for i in l:
-        if i: # i is patient
+        if i: # i is patient # true의 개수를 세는 함수.
             count += 1
     return count
-
 
 def getNumColonized(model):
     """for HCW"""
@@ -66,18 +50,10 @@ def getCumul(model):
 ICUA = ['A14','A15','A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13']
 ICUB = ['B14','B15','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','B11','B12','B13']
 
-"""if we want to shuffle"""
-#random.shuffle(ICUA)
-#random.shuffle(ICUB)
 import numpy as np
 path_A = np.array_split(ICUA, 5)
 path_B = np.array_split(ICUB, 5)
 paths = np.concatenate((path_A, path_B))
-#path_A1 = random.sample(ICUA, 7)
-#path_A2 = [x for x in ICUA if x not in path_A1]
-#path_B1 = random.sample(ICUB, 7)
-#path_B2 = [x for x in ICUB if x not in path_B1]
-#paths = [path_A1, path_A2, path_B1, path_B2]
 
 class CPE_Model(Model):
     """A model with some number of agents."""
@@ -108,8 +84,6 @@ class CPE_Model(Model):
         self.summon = False
         self.summoner = 0
         self.nurse_list = []
-        
-        #self.randomMotion = randomMotion # or False for circular motion
 
         #cumulative patients
         self.cumul_patients = num_Patients
@@ -156,10 +130,6 @@ class CPE_Model(Model):
         self.schedule.add(strange)
         self.grid.place_agent(strange, (strange.x, strange.y))
 
-        
-        
-        
-        
         
         # Create HCW agents
         for j in range(-self.num_HCWs, 0):
@@ -238,59 +208,19 @@ class CPE_Model(Model):
             self.grid.place_agent(d, (d.x, d.y))
 
 
-
-        """
-        The Great Wall
-        # for j in range(2,20):
-        #     if j not in range(10,13):
-        #         b = Wall(-100-j, self, colonized = False, x = j, y = 5)
-        #         #self.schedule.add(b)
-        #         self.grid.place_agent(b, (b.x, b.y))
-
-        # for j in range(-num_Goo-num_HCWs, -num_HCWs):
-        #     tempx = self.random.randrange(self.grid.width)
-        #     tempy = self.random.randrange(self.grid.height)
-        #     same_as_bed = False
-        #     for k in range(self.num_Patients):
-        #         if (2*(k%6)+1,(k//6)*3+1) == (tempx, tempy):
-        #             same_as_bed = True
-        #     while same_as_bed == True:
-        #         tempx = self.random.randrange(self.grid.width)
-        #         tempy = self.random.randrange(self.grid.height)
-        #         same_as_bed = False
-        #         for k in range(self.num_Patients):
-        #             if (2*(k%6)+1,(k//6)*3+1) == (tempx, tempy):
-        #                 same_as_bed = True
-        """
-
-
-
         self.datacollector = DataCollector(
             model_reporters={"Number of Patients sick": getNumSick,
                     "Number of HCW colonized": getNumColonized,
                     "Cumulative number of colonized patients": getCumulNumSick,
                     "HCW related infections": getHCWInfec,
-                    "Cumulative Patients": getCumul,
-                    #"Total number of Patients": getTotPatients
+                    "Cumulative Patients": getCumul
                     })
             
         self.running = True
         self.datacollector.collect(self)
+        print("self.tick",self.tick)
 
-    def get_nurse_list(self):
-        l = []
-        for m in model.schedule.agents:
-            if isinstance(m, Nurse):
-                l.append(m)
-        return l
-
-    def get_patient_list(self):
-        l = []
-        for m in model.schedule.agents:
-            if m.isPatient:
-                l.append(m)
-        return l
-
+    
     def step(self):
         #print('Cumulative Patients: {}'.format(self.cumul_patients))
 
@@ -313,23 +243,6 @@ class CPE_Model(Model):
             self.grid.remove_agent(ex_patient)
             self.schedule.remove(ex_patient)
             self.discharged.remove(ex_patient)
-
-            # add a new patient in place of old patient
-            #def __init__(self, unique_id, model, colonized, x, y):
-        
-        #Instead of prob for each bed, make it into prob for entire ward
-        """if not not self.empty_beds: #if empty_beds is not empty
-            incoming = np.random.choice([1,0], p = [self.prob_new_patient, 1-self.prob_new_patient])
-            if (incoming == 1):
-                bed = self.empty_beds.pop() # 
-                tempx, tempy = bed # unpack the tuple
-                new_patient = Patient(self.num_Patients + self.cumul_patients, self, colonized = False, x = tempx, y = tempy)
-                self.schedule.add(new_patient)
-                self.grid.place_agent(new_patient, (tempx, tempy))
-                self.cumul_patients += 1
-                if new_patient.colonized == True:
-                    self.cumul_sick_patients += 1
-        """
         
         """Move patients to Isolated beds"""
         if self.isolate_sick:
@@ -363,18 +276,6 @@ class CPE_Model(Model):
                 else:
                     continue
 
-
-
-
     def run_model(self, n):
         for i in range(n):
             self.step()
-
-    #print('\n')
-
-
-# %%
-cleaningDay = 40 # every 40 days
-model = CPE_Model(num_HCWs=numHCW, num_Patients=numPatients, num_Goo = numGoo, prob_patient_sick = 0.5, prob_new_patient = 0.5, cleaningDay = cleaningDay, prob_transmission = .9, isolation_factor = .5, isolate_sick = True, icu_hcw_wash_rate=.9, outside_hcw_wash_rate=.9, height=height, width=width)
-
-# %%
