@@ -222,43 +222,42 @@ class CPE_Model(Model):
         # self.datacollector.collect(self)
         
     def step(self):
-        #print('Cumulative Patients: {}'.format(self.cumul_patients))
+        # 시간이 1tick 씩 흐른다.
         self.tick += 1
         self.tick %= self.ticks_in_day # to keep the number from getting too large
+
+        # sommon Nurse
         if self.tick % self.ticks_in_hour == 0:
             self.summoner = self.tick // self.ticks_in_hour
             if self.summoner > 0 and self.summoner < 16: # only for patients 1~15
                 self.summon = True
-
-        
+   
         self.datacollector.collect(self)
         self.schedule.step()
+
+        # remove patient
         for ex_patient in self.discharged:
-            # get location of the patient to be discharged
-            tempx = ex_patient.x
-            tempy = ex_patient.y
-            
-            # remove patient
             #self.remove_patient(ex_patient)
             self.grid.remove_agent(ex_patient)
             self.schedule.remove(ex_patient)
             self.discharged.remove(ex_patient)
         
-        """Move patients to Isolated beds"""
-        if self.isolate_sick:
+        # Move patients to Isolated beds
+        if self.isolate_sick: # T/F 로 바꿔가면서 실험
+
             for bed in self.shared_beds: # 7-person room
                 if bed.filledSick:
                     cellmates = self.grid.get_cell_list_contents([bed.pos])
                     for cellmate in cellmates: # in case HCW is also in the same cell
-                        
-                        if not cellmate.isPatient:
+                        if not cellmate.isPatient: # filledSick이 True인 이상 무조건 아픈 환자가 있는거 아닌가? 환자가 지금 아프지만 간호사한테 방금 옮은걸 수도 있어서?
                             continue # hcw or THE BED ITSELF
                         
                         sickguy = cellmate
                         for ibed in self.isol_beds:
                             if ibed.filledSick:
                                 continue
-                            if ibed.filled:
+
+                            if ibed.filled: # 왜 있는놈 부터 뻈지? 빈자리부터 채우고 없으면 있는놈 뺏으면 안되나?
                                 icellmates = self.grid.get_cell_list_contents([ibed.pos])
                                 for icellmate in icellmates:
                                     if icellmate.isPatient:
@@ -271,11 +270,12 @@ class CPE_Model(Model):
                             else: # not filled
                                 self.grid.move_agent(sickguy, (ibed.x, ibed.y))
                                 ibed.checkFilled() # to label the bed filled
-                                break
-                        
+                                break                        
                 else:
-                    continue
+                    continue # 감염환자가 격리실로 옮겨지고 나서 bed.pos은 checkFilled() 안해줘도 되나요? 
+                                # 매번 step에서 침대의 checkFilled()함수가 돌아가고 있습니다.
+                                # 매번 step에서 환자의 isolatedcheck함수가 돌아가고 있습니다. (그냥 여기다 해주면 굳이 매번할 필요 없지않나.)
 
-    def run_model(self, n):
-        for i in range(n):
-            self.step()
+    # def run_model(self, n):
+    #     for i in range(n):
+    #         self.step()
