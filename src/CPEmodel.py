@@ -54,7 +54,7 @@ paths = np.concatenate((path_A, path_B))
 
 class CPE_Model(Model):
     """A model with some number of agents."""
-    def __init__(self, prob_patient_sick, prob_new_patient, prob_transmission, isolation_factor, cleaningDay, isolate_sick, icu_hcw_wash_rate, outside_hcw_wash_rate, height, width):
+    def __init__(self, prob_patient_sick, prob_new_patient, prob_transmission, isolation_factor, cleaningDay, isolate_sick, isolation_time , icu_hcw_wash_rate, outside_hcw_wash_rate, height, width):
         
         self.num_HCWs = 10
         self.num_Patients = 30
@@ -67,6 +67,7 @@ class CPE_Model(Model):
         
         self.cleaningDay = cleaningDay 
         self.isolate_sick = isolate_sick
+        self.isolation_time = isolation_time
         self.icu_hcw_wash_rate = icu_hcw_wash_rate
         self.outside_hcw_wash_rate = outside_hcw_wash_rate
         
@@ -74,7 +75,7 @@ class CPE_Model(Model):
         
         # 시간 설정
         self.tick = 0
-        self.ticks_in_hour = 36 * 3 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 1 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
 
         self.schedule = BaseScheduler(self)
@@ -249,28 +250,30 @@ class CPE_Model(Model):
                 if bed.filledSick:
                     cellmates = self.grid.get_cell_list_contents([bed.pos])
                     for cellmate in cellmates: # in case HCW is also in the same cell
-                        if not cellmate.isPatient: # filledSick이 True인 이상 무조건 아픈 환자가 있는거 아닌가? 환자가 지금 아프지만 간호사한테 방금 옮은걸 수도 있어서?
+                        if not cellmate.isPatient: 
                             continue # hcw or THE BED ITSELF
-                        
-                        sickguy = cellmate
-                        for ibed in self.isol_beds:
-                            if ibed.filledSick:
-                                continue
-
-                            if ibed.filled: # 왜 있는놈 부터 뻈지? 빈자리부터 채우고 없으면 있는놈 뺏으면 안되나?
-                                icellmates = self.grid.get_cell_list_contents([ibed.pos])
-                                for icellmate in icellmates:
-                                    if icellmate.isPatient:
-                                        healthyguy = icellmate
+                        else: # cellmate = patient
+                            if cellmate.move2isol: # 옮겨야 될 시간이 된 공유침대 감염환자 발견
+                                sickguy = cellmate
+                                for ibed in self.isol_beds:
+                                    if ibed.filledSick:
+                                        continue
+                                    if ibed.filled and not ibed.filledSick: # 격리침대 환자가 아프지 않은지 확인
+                                        icellmates = self.grid.get_cell_list_contents([ibed.pos])
+                                        
+                                        for icellmate in icellmates:
+                                            if icellmate.isPatient: # 아프지 않은 환자일거임
+                                                healthyguy = icellmate
+                                                self.grid.move_agent(sickguy, (ibed.x, ibed.y))
+                                                self.grid.move_agent(healthyguy, (bed.x, bed.y))
+                                                ibed.checkFilled() # to label the bed filled
+                                                break # we don't need to consider other icellmates
+                                        
+                                        break # we don't need to consider other beds
+                                    else: # not filled
                                         self.grid.move_agent(sickguy, (ibed.x, ibed.y))
-                                        self.grid.move_agent(healthyguy, (bed.x, bed.y))
                                         ibed.checkFilled() # to label the bed filled
-                                        break # we don't need to consider other icellmates
-                                break # we don't need to consider other beds
-                            else: # not filled
-                                self.grid.move_agent(sickguy, (ibed.x, ibed.y))
-                                ibed.checkFilled() # to label the bed filled
-                                break                        
+                                    break                        
                 else:
                     continue # 감염환자가 격리실로 옮겨지고 나서 bed.pos은 checkFilled() 안해줘도 되나요? 
                                 # 매번 step에서 침대의 checkFilled()함수가 돌아가고 있습니다.
