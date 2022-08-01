@@ -8,7 +8,6 @@ from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 from CPEmodel import CPE_Model
-from CPEmodel import width, height
 from agents import *
 
 # def agent_portrayal(agent):
@@ -123,11 +122,12 @@ def agent_portrayal(agent):
     return portrayal
 
 
-grid = CanvasGrid(agent_portrayal, width, height, 900, 300) #sets the size of grid on screen (does not mean agents will use all)
+grid = CanvasGrid(agent_portrayal, 32, 11, 900, 300) #sets the size of grid on screen (does not mean agents will use all)
 chart = ChartModule(
     [{"Label": "Number of Patients sick", "Color": "#800000"}, 
     {"Label": "Number of HCW colonized", "Color": "#00FFFF"},
-    #{"Label": "Total number of Patients", "Color": "#D2691E"},
+    # {"Label": "Total number of Patients", "Color": "#D2691E"},
+    # {"Label": "Cumulative Patients", "Color": "#black"},
     {"Label": "HCW related infections", "Color": "black"}
     ],
     data_collector_name="datacollector"
@@ -135,15 +135,15 @@ chart = ChartModule(
 
 
 model_params = {
-    "num_HCWs": UserSettableParameter(
-        "slider", #param type
-        "Nurses", #name
-        10, #default value
-        1, # min value
-        10, #max value
-        1, # step
-        description="How many HCWs?",
-    ),
+    # "num_HCWs": UserSettableParameter(
+    #     "slider", #param type
+    #     "Nurses", #name
+    #     10, #default value
+    #     1, # min value
+    #     10, #max value
+    #     1, # step
+    #     description="How many HCWs?",
+    # ),
     
     "icu_hcw_wash_rate": UserSettableParameter(
         "slider", #param type
@@ -165,9 +165,9 @@ model_params = {
         #description="How many HCWs?",
     ),
     
-    "num_Patients": 30,
+    # "num_Patients": 30,
 
-    "num_Goo": 30,
+    # "num_Goo": 30,
 
     "prob_patient_sick": UserSettableParameter(
         "slider", #param type
@@ -233,8 +233,8 @@ model_params = {
     #     #description="",
     # ),
 
-    "width": width, # sets which squares agents occupy
-    "height": height,
+    "width": 32, # sets which squares agents occupy
+    "height": 11,
 }
 
 server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
