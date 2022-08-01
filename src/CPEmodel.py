@@ -75,7 +75,7 @@ class CPE_Model(Model):
         
         # 시간 설정
         self.tick = 0
-        self.ticks_in_hour = 1 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 36*3 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
 
         self.schedule = BaseScheduler(self)
