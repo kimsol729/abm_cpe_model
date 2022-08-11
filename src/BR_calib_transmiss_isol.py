@@ -49,7 +49,7 @@ variable_params = {"prob_transmission" : beta}
 # %% STEP4
 model = CPE_Model(
     prob_patient_sick=probPatientSick,prob_new_patient=probNewPatient, prob_transmission=probTransmission, 
-    isolation_factor=isolationFactor,cleaningDay=cleanDay, isolate_sick=True, 
+    isolation_factor=isolationFactor,cleaningDay=cleanDay, isolate_sick=True, isolation_time=isolationTime,
     icu_hcw_wash_rate=ICUwashrate, outside_hcw_wash_rate=OUTSIDEwashrate,
     height=height, width=width
     )
@@ -78,7 +78,7 @@ year = 2022
 month = 8
 day = 9
 csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/batchrun/[{}.{}.{}]CalibrateBeta4.csv'.format(year,month,day))
+    'result/calibration/[{}.{}.{}]CalibrateBeta4.csv'.format(year,month,day))
 run_data.to_csv(csv_path)
 print("--- %s seconds ---" % (time.time() - start_time))
 #%%
