@@ -44,7 +44,7 @@ fixed_params = {
     }
 
 # Specify the variable I want to change separately.
-beta = [0.000001, 0.000002, 0.000003, 0.000004, 0.000005, 0.000006, 0.000007, 0.000008, 0.000009]
+beta = [10**(-8), 10**(-7), 10**(-6), 10**(-5), 10**(-4), 10**(-3)]
 variable_params = {"prob_transmission" : beta}
 # %% STEP4
 model = CPE_Model(
@@ -72,11 +72,25 @@ print("done!!")
 
 #%% coarser
 run_data = batch_run.get_model_vars_dataframe()
+df = run_data[['prob_transmission','Number_of_Patients_sick']]
+
+# Cummulative Mean
+cummean = pd.DataFrame(columns=beta)
+for i in beta:
+    cummean[i] = df[df['prob_transmission']==i]['Number_of_Patients_sick'].expanding().mean().array
+
+# 충분한 num iter 를 구하기위해, 평균이 수렴하는지 확인하는 이미지를 출력
+cummean.plot(figsize = (10, 6), grid = True)
+    # Zoom in
+plt = cummean.plot(xlim = (num_iter-10, num_iter-1), ylim = (2,3), grid = True)
+plt.axhline(y = 2.5, color = 'black',linestyle = '--')
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 #%%
-year = 2022
-month = 8
-day = 9
+from datetime import datetime
+current_time = datetime.now()
+year = current_time.year ; month = current_time.month ; day = current_time.day
+
 csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
     'result/calibration/[{}.{}.{}]CalibrateBeta4.csv'.format(year,month,day))
 run_data.to_csv(csv_path)
