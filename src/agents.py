@@ -169,6 +169,8 @@ class HCW(CPE_Agent):
                             if other.isPatient and not other.colonized: # nonsick patient
                                 other.colonized = True
                                 other.stay += 7*self.model.ticks_in_day #lengthen the stay
+                                if not other.isolated: # in the shared beds
+                                    other.isoltime = np.random.randint(1,self.model.isolation_time)*self.model.ticks_in_day # unif dist, bcz we dont know dist.
                                 self.model.cumul_sick_patients += 1
                                 self.model.num_infecByHCW += 1    
                             else: # (other.isGoo):
@@ -332,6 +334,8 @@ class Patient(CPE_Agent):
     def __init__(self, unique_id, model, colonized, x, y):
         super().__init__(unique_id, model, colonized, x, y)
         self.isPatient = True
+        self.isol_time = -1
+        self.move2isol = False
         #self.infecByHCW = False # in the beginning, nobody is infected by HCW
         
         self.checkIsolated()
@@ -361,10 +365,17 @@ class Patient(CPE_Agent):
     def step(self):
         #remove oneself if the stay is too long
         self.stay -= 1
+        self.isol_time -= 1
         if self.stay == 0:
             self.model.current_patients.remove(self)
             self.model.discharged.append(self)
         
+        if self.isol_time == 0:
+            self.move2isol = True
+        
+
+            
+
         #if self.new == True:
         #    print("New Patient {}: {}, {} days left".format(self.unique_id, self.state, self.stay))
         #else:
@@ -389,7 +400,7 @@ class Environment(CPE_Agent):
 class Bed(Environment):
     """ An agent with colonized status.
     Can get contaminated, but cleans after a patient leaves."""
-    def __init__(self, unique_id, model, colonized, x, y):
+    def __init__(self, unique_id, model, colonized, x, y): # just in case, colonized bed
         super().__init__(unique_id, model, colonized, x, y)
         self.isBed = True
         self.isIsolatedBed = False
@@ -405,11 +416,13 @@ class Bed(Environment):
                 self.model.cumul_patients += 1
                 if new_patient.colonized:
                     self.model.cumul_sick_patients += 1
-            self.model.empty_beds.add((self.x, self.y))
-        else:
-            if (self.x, self.y) in self.model.empty_beds: # without checking element in set, there could be error. 
-                self.model.empty_beds.remove((self.x, self.y)) 
-        self.checkFilled()
+            
+            self.checkFilled()
+            # self.model.empty_beds.add((self.x, self.y))
+        # else:
+        #     if (self.x, self.y) in self.model.empty_beds: # without checking element in set, there could be error. 
+        #         self.model.empty_beds.remove((self.x, self.y)) 
+        
         # if self.filled == False:
         #     self.colonized = False
 

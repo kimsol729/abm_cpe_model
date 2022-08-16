@@ -225,6 +225,15 @@ model_params = {
         value = True, #default value
         description="",
     ),
+      "isolation_time": UserSettableParameter(
+        "slider", #param type
+        "Isolated Period for sick patients", #name
+        14, #default value
+        1, #min value
+        14, #max
+        1, # step
+        description="Up to how long after you get infected, you'll be taken to the isolation room",
+    ),
     
     # "randomMotion": UserSettableParameter(
     #     "checkbox", #param type
