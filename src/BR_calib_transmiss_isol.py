@@ -11,7 +11,7 @@ import pandas as pd
 import time
 import seaborn as sns
 # %% STEP1,STEP2
-num_iter = 50
+num_iter = 100
 runtime = 200 #(Days)
 
 start_time = time.time()
