@@ -12,3 +12,8 @@ src/__pycache__/agents.cpython-310.pyc
 *.nav
 *.out
 *.xml
+*.snm
+*.blg
+*.bbl
+*.gz
+doc/abm_cpe.toc

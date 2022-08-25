@@ -93,15 +93,15 @@
 
 \begin{frame}
     \frametitle{Setting}
-    The number of iterations is 100
+    The number of iterations is 135
     \begin{center}
-    \begin{tabular}{|c||c|c|c|c|c|c|}   
+    \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}   
         \hline
-        \multicolumn{7}{|c|}{Experiment transmission rate} \\
+        \multicolumn{11}{|c|}{Experiment transmission rate (\(10^{-5}\)) } \\
         \hline
-        \(\beta\)& \(10^{-8}\) & \(10^{-7}\) & \(10^{-6}\) & \(10^{-5}\) & \(10^{-4}\) & \(10^{-3}\)\\
+        \(\beta\)& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
         \hline
-        patients& 1.83  & 2.04 & 2.05 & 2.33 & 2.77 & 6.95\\
+        patients& 2.26  & 2.54 & 2.14 & 2.30 & 2.50 & 2.57 & 2.58 & 2.44 & 2.71 & 2.65 \\
         \hline
     \end{tabular}
     \end{center}
@@ -109,7 +109,7 @@
 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=.5\textwidth]{../result/calibration/pic/[2022.8.17]CalibrateBeta4.eps.png} %must add a space here
+        \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement.png} %must add a space here
         \caption{Cummulative Average number of sick patients}
     \end{figure}
     
@@ -117,14 +117,13 @@
 
 \begin{frame}
     \frametitle{Result}
-    It is concluded that 80 or more is appropriate for the average value to come out stably. \\
-    For more stability, the number of iteration is fixed at 100.
+    The values between \(10^{-5}\) and \(10^{-4}\) were subdivided and tested. 
     \begin{figure}[H]
         \centering
-        \includegraphics[width=.5\textwidth]{../result/calibration/pic/[2022.8.17]CalibrateBeta4_zoom.eps.png} %must add a space here
+        \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement_zoom.png} %must add a space here
         \caption{Cummulative Average number of sick patients}
     \end{figure}
-    Choose the values from \(10^{-5}\) to \(10^{-4}\) as $\textit{transmission probability}$
+    As a result, all values did not increase sequentially. The value at 3 was the lowest, the value at 2 was similar to the target value, and the value at 8 was surprisingly small. Excluding these, 1 and 4 showed relatively low average values, 5,6,7 showed intermediate values, and 9 and 10 showed high values.
 \end{frame}
 
 
@@ -144,7 +143,7 @@
     \frametitle{Questions}
     
     \begin{itemize}
-        \item Are there any another values that depend on $\textit{transmission probability}$ besides the number of patients?
+        \item I wonder if it is appropriate to use 0.00005 as the $\textit{transmission probability}$.
         
     \end{itemize}
 \end{frame}
