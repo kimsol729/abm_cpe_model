@@ -11,7 +11,7 @@ import pandas as pd
 import time
 import seaborn as sns
 # %% STEP1,STEP2
-num_iter = 10
+num_iter = 100
 runtime = 200 #(Days)
 
 start_time = time.time()
@@ -44,7 +44,7 @@ fixed_params = {
     }
 
 # Specify the variable I want to change separately.
-beta = [0.00001,0.00002,0.00003,0.00004,0.00005,0.00006,0.00007,0.00008,0.00009,0.0001]
+beta = [10**(-8), 10**(-7), 10**(-6), 10**(-5), 10**(-4), 10**(-3)]
 variable_params = {"prob_transmission" : beta}
 # %% STEP4
 model = CPE_Model(
@@ -73,15 +73,6 @@ print("done!!")
 #%% coarser
 run_data = batch_run.get_model_vars_dataframe()
 df = run_data[['prob_transmission','Number_of_Patients_sick']]
-#%%
-from datetime import datetime
-current_time = datetime.now()
-year = current_time.year ; month = current_time.month ; day = current_time.day
-
-csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/calibration/[{}.{}.{}]CalibrateBeta6.csv'.format(year,month,day))
-run_data.to_csv(csv_path)
-print("--- %s seconds ---" % (time.time() - start_time))
 
 # Cummulative Mean
 cummean = pd.DataFrame(columns=beta)
@@ -96,11 +87,18 @@ plt.axhline(y = 2.5, color = 'black',linestyle = '--')
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 #%%
+from datetime import datetime
+current_time = datetime.now()
+year = current_time.year ; month = current_time.month ; day = current_time.day
+
+csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
+    'result/calibration/[{}.{}.{}]CalibrateBeta4.csv'.format(year,month,day))
+run_data.to_csv(csv_path)
+print("--- %s seconds ---" % (time.time() - start_time))
+#%%
 data_mean = run_data.groupby(["prob_transmission"])['Number_of_Patients_sick'].mean()
 print(data_mean)
 print('\n\n')
 data_mean = data_mean.reset_index()
 print(data_mean['Number_of_Patients_sick'])
 mean_patients_sick = data_mean['Number_of_Patients_sick'] #The avg number for the iterations
-
-# %%
