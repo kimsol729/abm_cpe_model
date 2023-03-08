@@ -1,11 +1,12 @@
 from mesa import Agent
 import numpy as np
 import random
-from routes import length_stay
+# from model.routes import length_stay
 
 
 ICUA = ['A14','A15','A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13']
 ICUB = ['B14','B15','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','B11','B12','B13']
+length_stay = np.array([203,68,117,46,10,5,12,271,40,78,54,13,10,5,13,29,15,54,79,19,36,5,7,69,8,13,7,64,25,67,44,230,208,65,6,8,4,16,1,4,3,16,27,6,41,73,21,21,127,22,33,3,43,41,10,16,16,1,60,30,9,43,103,22,83,5,39,22,6,25,33,4,8,109,37,24,23,70,11,21,14,58,9,3,10,40,13,26,32])
 
 
 def room2coord(room): # Outputs
@@ -170,7 +171,7 @@ class HCW(CPE_Agent):
                                 other.colonized = True
                                 other.stay += 7*self.model.ticks_in_day #lengthen the stay
                                 if not other.isolated: # in the shared beds
-                                    other.isoltime = np.random.randint(1,self.model.isolation_time)*self.model.ticks_in_day # unif dist, bcz we dont know dist.
+                                    other.isol_time = np.random.randint(1,self.model.isolation_time)*self.model.ticks_in_day # unif dist, bcz we dont know dist.
                                 self.model.cumul_sick_patients += 1
                                 self.model.num_infecByHCW += 1    
                             else: # (other.isGoo):
@@ -365,8 +366,6 @@ class Patient(CPE_Agent):
             self.isolated = False
 
     def step(self):
-        # print("Hi, I am Patients " + str(self.unique_id) + ".")
-        #remove oneself if the stay is too long
         self.stay -= 1
         self.isol_time -= 1
         if self.stay == 0:
@@ -375,15 +374,7 @@ class Patient(CPE_Agent):
         
         if self.isol_time == 0:
             self.move2isol = True
-        
 
-            
-
-        #if self.new == True:
-        #    print("New Patient {}: {}, {} days left".format(self.unique_id, self.state, self.stay))
-        #else:
-        #    print("Patient {}: {}, {} days left".format(self.unique_id, self.state, self.stay))
-        #self.new = False
 
         self.checkIsolated() #alters state if moved to/from isolated bed
     

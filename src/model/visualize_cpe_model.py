@@ -1,20 +1,11 @@
 
 #%%
-
 from mesa.visualization.ModularVisualization import ModularServer
-
-
 from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
-from CPEmodel import CPE_Model
+from cpe_model import CPE_Model
 from agents import *
-
-# def agent_portrayal(agent):
-#     portrayal = {"Shape": "circle", "Filled": "true", "r": 0.5, "Layer":0, "Color": "red"}
-#     return portrayal
-
-
 
 def agent_portrayal(agent):
     portrayal = {"Shape":"circle",
@@ -145,7 +136,7 @@ model_params = {
     #     description="How many HCWs?",
     # ),
     
-    "icu_hcw_wash_rate": UserSettableParameter(
+    "hcw_wash_rate": UserSettableParameter(
         "slider", #param type
         "Handwash probability (ICU worker)", #name
         .9, #default value
@@ -155,15 +146,15 @@ model_params = {
         #description="How many HCWs?",
     ),
     
-    "outside_hcw_wash_rate": UserSettableParameter(
-        "slider", #param type
-        "Handwash probability (outside worker)", #name
-        .8, #default value
-        .1, # min value
-        1, #max value
-        .05, # step
-        #description="How many HCWs?",
-    ),
+    # "outside_hcw_wash_rate": UserSettableParameter(
+    #     "slider", #param type
+    #     "Handwash probability (outside worker)", #name
+    #     .8, #default value
+    #     .1, # min value
+    #     1, #max value
+    #     .05, # step
+    #     #description="How many HCWs?",
+    # ),
     
     # "num_Patients": 30,
 
@@ -219,12 +210,7 @@ model_params = {
         description="How safe are the isolated beds?",
     ),
     
-    "isolate_sick": UserSettableParameter(
-        "checkbox", #param type
-        "Isolate sick patients", #name
-        value = True, #default value
-        description="",
-    ),
+
       "isolation_time": UserSettableParameter(
         "slider", #param type
         "Isolated Period for sick patients", #name

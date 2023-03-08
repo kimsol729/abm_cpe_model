@@ -49,6 +49,7 @@
 \usepackage{kotex}
 \usepackage{seqsplit} % for automatic line breaks
 \usepackage{graphicx}
+\usepackage[outdir=./]{epstopdf} %%%%%%%%%%%%%%%%%%%%%
 
 
 % \usepackage[
@@ -91,62 +92,60 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%START%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% \begin{frame}
+%     \frametitle{Setting}
+%     The number of iterations is 135
+%     \begin{center}
+%     \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}   
+%         \hline
+%         \multicolumn{11}{|c|}{Experiment transmission rate (\(10^{-5}\)) } \\
+%         \hline
+%         \(\beta\)& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+%         \hline
+%         patients& 2.26  & 2.54 & 2.14 & 2.30 & 2.50 & 2.57 & 2.58 & 2.44 & 2.71 & 2.65 \\
+%         \hline
+%     \end{tabular}
+%     \end{center}
+
+
+%     \begin{figure}[H]
+%         \centering
+%         \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement.png} %must add a space here
+%         \caption{Cummulative Average number of sick patients}
+%     \end{figure}
+    
+% \end{frame}
+
 \begin{frame}
-    \frametitle{Setting}
-    The number of iterations is 135
-    \begin{center}
-    \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}   
-        \hline
-        \multicolumn{11}{|c|}{Experiment transmission rate (\(10^{-5}\)) } \\
-        \hline
-        \(\beta\)& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
-        \hline
-        patients& 2.26  & 2.54 & 2.14 & 2.30 & 2.50 & 2.57 & 2.58 & 2.44 & 2.71 & 2.65 \\
-        \hline
-    \end{tabular}
-    \end{center}
-
-
+    \frametitle{Result}
+    Distribution converge (Cleaning Day)
     \begin{figure}[H]
         \centering
-        \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement.png} %must add a space here
-        \caption{Cummulative Average number of sick patients}
+        % \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement_zoom.png} %must add a space here
+        \includegraphics[width=.5\textwidth]{../result/pic/clean_dist50.eps} %must add a space here
+        \caption{50 iterations}
     \end{figure}
-    
 \end{frame}
 
 \begin{frame}
     \frametitle{Result}
-    The values between \(10^{-5}\) and \(10^{-4}\) were subdivided and tested. 
+    Distribution converge (Handwashing)
     \begin{figure}[H]
         \centering
-        \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement_zoom.png} %must add a space here
-        \caption{Cummulative Average number of sick patients}
+        % \includegraphics[width=.5\textwidth]{../result/calibration/pic/refinement_zoom.png} %must add a space here
+        \includegraphics[width=.5\textwidth]{../result/pic/handwash_dist50.eps} %must add a space here
+        \caption{50 iterations}
     \end{figure}
-    As a result, all values did not increase sequentially. The value at 3 was the lowest, the value at 2 was similar to the target value, and the value at 8 was surprisingly small. Excluding these, 1 and 4 showed relatively low average values, 5,6,7 showed intermediate values, and 9 and 10 showed high values.
 \end{frame}
-
-
 
 % \begin{frame}
-%     \frametitle{Controls}
+%     \frametitle{Questions}
     
 %     \begin{itemize}
-%         \item Environment cleansing
-%         \item HCW route (eg. visit isolated beds only? or both?)
-%         \item Handwashing probability (from literature, fixed at .9)
-%         \item Isolation of infected patients
+%         \item I wonder if it is appropriate to use 0.00005 as the $\textit{transmission probability}$.
+        
 %     \end{itemize}
 % \end{frame}
-
-\begin{frame}
-    \frametitle{Questions}
-    
-    \begin{itemize}
-        \item I wonder if it is appropriate to use 0.00005 as the $\textit{transmission probability}$.
-        
-    \end{itemize}
-\end{frame}
 % \begin{frame}
 %     \frametitle{Attempt to view the long run equilibrium}
 %     \begin{figure}[H]
