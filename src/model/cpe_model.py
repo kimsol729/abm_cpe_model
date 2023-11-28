@@ -8,7 +8,6 @@ from mesa.space import MultiGrid
 from model.agents import *
 
 #%%
-
 def getNumSick(model):
     """for patients"""
     count = 0
@@ -39,6 +38,9 @@ def getCumul(model):
     """cumulative patients"""
     return model.cumul_patients
 
+def getNumIsol(model):
+    """격리실로 옮겨지는 환자 수"""
+    return model.num_move2isol
 #%%
 ICUA = ['A14','A15','A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13']
 ICUB = ['B14','B15','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','B11','B12','B13']
@@ -92,6 +94,7 @@ class CPE_Model(Model):
         self.cumul_patients = self.num_Patients # cumulative patients (*)
         self.cumul_sick_patients = 0 # cumulative sick patients (*)
         self.num_infecByHCW = 0 # HCW에 의한 감염환자 수 (*)
+        self.num_move2isol = 0 # 검사로 인해 Isolated bed로 옮겨지는 환자 수 (*)
 
         # Create Agents
         # Xray Drs 3명
@@ -260,6 +263,7 @@ class CPE_Model(Model):
                                         if icellmate.isPatient: # 아프지 않은 환자일거임
                                             healthyguy = icellmate
                                             self.grid.move_agent(sickguy, (ibed.x, ibed.y))
+                                            self.num_move2isol += 1
                                             self.grid.move_agent(healthyguy, (bed.x, bed.y))
                                             ibed.checkFilled() # to label the bed filled
                                             break # we don't need to consider other icellmates
@@ -267,6 +271,7 @@ class CPE_Model(Model):
                                     break # we don't need to consider other beds
                                 else: # not filled
                                     self.grid.move_agent(sickguy, (ibed.x, ibed.y))
+                                    self.num_move2isol += 1
                                     ibed.checkFilled() # to label the bed filled
                                 break
             else:

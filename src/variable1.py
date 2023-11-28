@@ -1,6 +1,6 @@
 # %%
 from model.cpe_model import CPE_Model
-from model.cpe_model import getHCWInfec
+from model.cpe_model import getHCWInfec, getNumIsol
 from plot_distribution import dist_1v
 from mesa.batchrunner import BatchRunner
 import os
@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 # %%
-variable = 'clean' # clean, wash or isol
+variable = 'isol' # clean, wash or isol
 num_iter = 50; np.int64(num_iter)
 save_iter = 10
 
@@ -81,7 +81,8 @@ batch_run = BatchRunner(
     fixed_parameters = fixed_params,
     iterations = save_iter,
     max_steps = model.ticks_in_day * runtime,
-    model_reporters={"HCW_related_infecs" : getHCWInfec}
+    model_reporters={"HCW_related_infecs" : getHCWInfec
+                     ,"Num_move_Patients": getNumIsol}
                     #  "Number_of_Patients_sick":getNumSick}
 )
 
@@ -107,7 +108,7 @@ for _ in range(num_iter):
 print("done!!")
 
 # %%
-data_mean = run_data.groupby(["cleaningDay"])['HCW_related_infecs']
+data_mean = run_data.groupby(["isolation_time"])['Num_move_Patients']
 print(data_mean)
 print('\n\n')
 data_mean = data_mean.reset_index()
