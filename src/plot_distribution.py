@@ -107,28 +107,67 @@ def dist_1v(df,n,save_iter,variable,title):
         plt.subplot(221)
         sns.histplot(df.iloc[:n-save_iter,0], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
         sns.histplot(df.iloc[:,0], stat = 'density' ,binwidth=bin_,color='blue',alpha = 0.5, edgecolor = "none")
-        plt.axvline(df.iloc[:,0].median(),color = 'k')
+        plt.axvline(df.iloc[:,0].mean(),color = 'k')
         plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
         plt.title("{}".format(title['sub_1']))
 
         plt.subplot(222)
         sns.histplot(df.iloc[:n-save_iter,1], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
         sns.histplot(df.iloc[:,1], stat = 'density' ,binwidth=bin_,color='orange',alpha = 0.5, edgecolor = "none")
-        plt.axvline(df.iloc[:,1].median(),color = 'k')
+        plt.axvline(df.iloc[:,1].mean(),color = 'k')
         plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
         plt.title("{}".format(title['sub_2']))
 
         plt.subplot(223)
         sns.histplot(df.iloc[:n-save_iter,2], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
         sns.histplot(df.iloc[:,2], stat = 'density' ,binwidth=bin_,color='green',alpha = 0.5, edgecolor = "none")
-        plt.axvline(df.iloc[:,2].median(),color = 'k')
+        plt.axvline(df.iloc[:,2].mean(),color = 'k')
         plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
         plt.title("{}".format(title['sub_3']))
 
         plt.subplot(224)
         sns.histplot(df.iloc[:n-save_iter,3], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
         sns.histplot(df.iloc[:,3], stat = 'density' ,binwidth=bin_,color='red',alpha = 0.5, edgecolor = "none")
-        plt.axvline(df.iloc[:,3].median(),color = 'k')
+        plt.axvline(df.iloc[:,3].mean(),color = 'k')
+        plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
+        plt.title("{}".format(title['sub_4']))
+        
+        fig.suptitle('Histogram According To {}(simul : {})'.format(title['main'],n),fontweight ="bold",fontsize = 15)
+        plt.savefig(pic_path,dpi = 600)
+#%%
+def dist_2v(df,n,save_iter,variable,title):
+        fig , ax = plt.subplots(2, 2,figsize=(10, 8))
+        bin_= 1
+        x_range = [0,df.max().max()];y_range = [0,0.5]
+        
+        pic_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
+        'result/pic/2v_{}_dist_{}.png'.format(variable,n))
+        
+        plt.subplot(221)
+        sns.histplot(df.iloc[:n-save_iter,0], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
+        sns.histplot(df.iloc[:,0], stat = 'density' ,binwidth=bin_,color='blue',alpha = 0.5, edgecolor = "none")
+        plt.axvline(df.iloc[:,0].mean(),color = 'k')
+        plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
+        plt.title("{}".format(title['sub_1']))
+
+        plt.subplot(222)
+        sns.histplot(df.iloc[:n-save_iter,1], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
+        sns.histplot(df.iloc[:,1], stat = 'density' ,binwidth=bin_,color='orange',alpha = 0.5, edgecolor = "none")
+        plt.axvline(df.iloc[:,1].mean(),color = 'k')
+        plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
+        plt.title("{}".format(title['sub_2']))
+
+        plt.subplot(223)
+        sns.histplot(df.iloc[:n-save_iter,2], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
+        sns.histplot(df.iloc[:,2], stat = 'density' ,binwidth=bin_,color='green',alpha = 0.5, edgecolor = "none")
+        plt.axvline(df.iloc[:,2].mean(),color = 'k')
+        plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
+        plt.title("{}".format(title['sub_3']))
+
+        plt.subplot(224)
+        sns.histplot(df.iloc[:n-save_iter,3], stat = 'density' ,binwidth=bin_,color='k',alpha = 0.3, edgecolor = "none")
+        sns.histplot(df.iloc[:,3], stat = 'density' ,binwidth=bin_,color='red',alpha = 0.5, edgecolor = "none")
+        plt.axvline(df.iloc[:,3].mean(),color = 'k')
         plt.ylim(y_range);plt.xlim(x_range);plt.xlabel('')
         plt.title("{}".format(title['sub_4']))
         

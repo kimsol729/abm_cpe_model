@@ -2,37 +2,43 @@
 #%%
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid
-from mesa.visualization.modules import ChartModule
+from mesa.visualization.modules import ChartModule, TextElement
 from mesa.visualization.UserParam import UserSettableParameter
-from cpe_model import CPE_Model
-from agents import *
+from model.cpe_model import CPE_Model
+from model.agents import *
+import matplotlib.pyplot as plt
 
+#%%
 def agent_portrayal(agent):
     portrayal = {"Shape":"circle",
                     "Filled": "true",
                     "r": 0.4}
     if agent.isPatient == True:
         # First start with Patients
-        
         if agent.colonized == False:
-                portrayal["Color"] = "silver"
+                portrayal["Color"] = "#666666" # 아프지 않은 환자
                 portrayal["Layer"] = 3
-                if agent.stay == 1:
-                    portrayal["Color"] = "#FDFEFE" # shine before leaving
+                # if agent.stay == 1:
+                #     portrayal["Color"] = "#FDFEFE" # shine before leaving
                 portrayal["r"] = .3
+
         else:
             # if agent.infecByHCW == True:
             #     portrayal["Color"] = "#FFA500" # orange
             # else:
-            portrayal["Color"] = "maroon"
+            portrayal["Color"] = "#000000"
             portrayal["Layer"] = 2
             portrayal["r"] = .4
-            if agent.stay <= 4*agent.model.ticks_in_day and agent.stay > 2*agent.model.ticks_in_day:
-                portrayal["Color"] = "#CD5C5C" # indianred
-            if agent.stay <= 2*agent.model.ticks_in_day and agent.stay > 1:
-                portrayal["Color"] = "#E9967A" # dark salmon
-            if agent.stay == 1:
-                portrayal["Color"] = "#ffc300" # 
+            if agent.isol_time > 0:
+                portrayal["text"] = f"Isol Time: {np.round(agent.isol_time/agent.model.ticks_in_day,2)}"
+                portrayal["Color"] = "#cd5c5c" # 격리실로 옮겨질 예정
+
+            # if agent.stay <= 4*agent.model.ticks_in_day and agent.stay > 2*agent.model.ticks_in_day:
+            #     portrayal["Color"] = "#CD5C5C" # indianred
+            # if agent.stay <= 2*agent.model.ticks_in_day and agent.stay > 1:
+            #     portrayal["Color"] = "#E9967A" # dark salmon
+            # if agent.stay == 1:
+            #     portrayal["Color"] = "#ffc300" # 
                 
     if isinstance(agent, Nurse):
         portrayal["Shape"] = "rect"
@@ -74,9 +80,9 @@ def agent_portrayal(agent):
         portrayal["w"] = .55 #width
         portrayal["h"] = .9 #height of rectangle
         if agent.isIsolatedBed:
-            portrayal["Color"] = "#43165B"
+            portrayal["Color"] = "#fdc4ac" #salmon
         else:
-            portrayal["Color"] = "#727272" #grey
+            portrayal["Color"] = "#fff2c7" #yellow
         #"#273746"
 
     # if agent.isIsolatedBed == True:
@@ -119,7 +125,8 @@ chart = ChartModule(
     {"Label": "Number of HCW colonized", "Color": "#00FFFF"},
     # {"Label": "Total number of Patients", "Color": "#D2691E"},
     # {"Label": "Cumulative Patients", "Color": "#black"},
-    {"Label": "HCW related infections", "Color": "black"}
+    {"Label": "HCW related infections", "Color": "black"},
+    {"Label": "Move to isolation", "Color": "#D2691E"}
     ],
     data_collector_name="datacollector"
 )
@@ -232,8 +239,14 @@ model_params = {
     "height": 11,
 }
 
-server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
-server.port = 8522
+class TickCounter(TextElement):
+    def render(self, model):
+        return f"DAY: {np.round(model.day)} days   {np.round(model.schedule.time/model.ticks_in_hour + 1)} o'clock"
+
+tick_counter = TickCounter()
+server = ModularServer(CPE_Model, [grid, chart, tick_counter], "CPE Model", model_params)
+# server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
+server.port = 8502
 server.launch()
 # %%
 

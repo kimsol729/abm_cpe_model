@@ -4,11 +4,10 @@ from mesa.datacollection import DataCollector
 from mesa.time import BaseScheduler, RandomActivation, SimultaneousActivation
 import numpy as np
 from mesa.space import MultiGrid
-
 from model.agents import *
 
 #%%
-def getNumSick(model):
+def getNumSick(model): # 2.5명의 환자가 대체 뭘 말하는 거냐.........
     """for patients"""
     count = 0
     l = [(agent.isPatient and agent.colonized) for agent in model.schedule.agents] # 모든 agent
@@ -75,8 +74,9 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
-        self.ticks_in_hour = 36*3 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 3 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
+        self.day = 0
 
         self.schedule = BaseScheduler(self)
 
@@ -218,7 +218,8 @@ class CPE_Model(Model):
                     "Number of HCW colonized": getNumColonized,
                     "Cumulative number of colonized patients": getCumulNumSick,
                     "HCW related infections": getHCWInfec,
-                    "Cumulative Patients": getCumul
+                    "Cumulative Patients": getCumul,
+                    "Move to isolation": getNumIsol
                     })
 
         self.running = True
@@ -228,7 +229,8 @@ class CPE_Model(Model):
         self.datacollector.collect(self)
         self.schedule.step()
         self.schedule.time %= self.ticks_in_day # to keep the number from getting too large
-
+        if self.schedule.time == 0:
+            self.day += 1
         # sommon Nurse
         if self.schedule.time % self.ticks_in_hour == 0:
             self.summoner = self.schedule.time // self.ticks_in_hour
@@ -264,6 +266,7 @@ class CPE_Model(Model):
                                             healthyguy = icellmate
                                             self.grid.move_agent(sickguy, (ibed.x, ibed.y))
                                             self.num_move2isol += 1
+                                            print("MOVE 2 ISOLATION!!!")
                                             self.grid.move_agent(healthyguy, (bed.x, bed.y))
                                             ibed.checkFilled() # to label the bed filled
                                             break # we don't need to consider other icellmates
@@ -272,6 +275,7 @@ class CPE_Model(Model):
                                 else: # not filled
                                     self.grid.move_agent(sickguy, (ibed.x, ibed.y))
                                     self.num_move2isol += 1
+                                    print("MOVE 2 ISOLATION!!!")
                                     ibed.checkFilled() # to label the bed filled
                                 break
             else:
@@ -282,5 +286,6 @@ class CPE_Model(Model):
     # def run_model(self, n):
     #     for i in range(n):
     #         self.step()
+# %%
 
 # %%

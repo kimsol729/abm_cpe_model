@@ -172,6 +172,8 @@ class HCW(CPE_Agent):
                                 other.stay += 7*self.model.ticks_in_day #lengthen the stay
                                 if not other.isolated: # in the shared beds
                                     other.isol_time = np.random.randint(1,self.model.isolation_time)*self.model.ticks_in_day # unif dist, bcz we dont know dist.
+                                print("patient stay: ", other.stay)
+                                print("patient d-day: ", other.isol_time)
                                 self.model.cumul_sick_patients += 1
                                 self.model.num_infecByHCW += 1    
                             else: # (other.isGoo):
