@@ -2,7 +2,7 @@
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.modules import ChartModule, TextElement
-from mesa.visualization.UserParam import UserSettableParameter
+from mesa.visualization.UserParam import Slider, Choice, StaticText
 from model.cpe_model import CPE_Model
 from model.agents import *
 import matplotlib.pyplot as plt
@@ -132,8 +132,7 @@ chart = ChartModule(
 
 model_params = {
 
-    "prob_transmission": UserSettableParameter(
-        "slider", #param type
+    "prob_transmission": Slider(
         "Probability of transmission", #name
         .1, #default value
         0, # min value
@@ -141,10 +140,24 @@ model_params = {
         .1, # step
         description="Probability of transmission",
     ),
+    
+    "inflow_date": Choice(
+        'Duration',
+        value='2017-1',
+        choices=['2017-1', '2017-2', '2018-1', '2021-1', '2021-2','2022-1' ,'2022-2']
+    ),
+
+    "hospital_period": Slider(
+        "hospital period", #name
+        14, #default value
+        1, # min value
+        21, #max value
+        1, # step
+        description="Average hospital period",
+    ),
 
 
-    "prob_new_patient": UserSettableParameter(
-        "slider", #param type
+    "prob_new_patient": Slider(
         "Probability of a admission of new patient", #name
         .1, #default value
         0, # min value
@@ -153,19 +166,7 @@ model_params = {
         description="Probability of a admission of new patient",
     ),
 
-
-    "prob_patient_sick": UserSettableParameter(
-        "slider", #param type
-        "Probability incoming patient is sick", #name
-        .01, #default value
-        0.005, # min value
-        .9, #max value
-        .01, # step
-        description="Probability that incoming patient is already sick",
-    ),
-
-    "isolation_factor": UserSettableParameter(
-        "slider", #param type
+    "isolation_factor": Slider(
         "Isolation factor", #name
         .2, #default value
         0, # min value
@@ -174,8 +175,7 @@ model_params = {
         description="How safe are the isolated beds?",
     ),
 
-    "hcw_wash_rate": UserSettableParameter(
-        "slider", #param type
+    "hcw_wash_rate": Slider(
         "Handwash probability (ICU worker)", #name
         .9, #default value
         .1, # min value
@@ -184,8 +184,7 @@ model_params = {
         #description="How many HCWs?",
     ),
 
-    "cleaningDay": UserSettableParameter(
-            "slider", #param type
+    "cleaningDay": Slider(
             "Days before cleaning", #name
             40, #default value
             10, # min value
@@ -194,8 +193,7 @@ model_params = {
             description="How often to wash hands?",
         ),
 
-      "isolation_time": UserSettableParameter(
-        "slider", #param type
+      "isolation_time": Slider(
         "Isolated Period for sick patients", #name
         14, #default value
         1, #min value
@@ -217,6 +215,4 @@ server = ModularServer(CPE_Model, [grid, chart, tick_counter], "CPE Model", mode
 # server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
 server.port = 8517
 server.launch()
-# %%
-
 # %%

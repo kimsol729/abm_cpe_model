@@ -343,17 +343,16 @@ class Patient(CPE_Agent):
         
         self.checkIsolated()
         self.model.current_patients.append(self)
-        sick = np.random.choice([1,2], p=[self.model.prob_patient_sick,1-self.model.prob_patient_sick])
-        if sick == 1:
-            self.colonized = True
 
-        
-        if self.colonized: #mean 11, 1q 3.5,  median 6, 3q 16.75
-            self.stay = np.random.choice(length_stay) * self.model.ticks_in_day
-        
-        else: #mean 7 median 2, 1q 0, 3q 9
-            # right skewed, so use geometric random var
-            self.stay = np.random.geometric(.2) * self.model.ticks_in_day
+        # how to determine patient sick
+        if int(self.model.P_I) < sum(1 for num in self.model.inflow_date if num < self.model.day):
+            self.colonized = True
+            self.model.P_I += 1
+            print(f"happen P_I >>> today: {self.model.day}")
+            print(f"Real data date: {self.model.inflow_date[int(self.model.P_I - 1)]}")
+
+        # hospital_period
+        self.stay = round(np.random.exponential(scale=self.model.hospital_period)) * self.model.ticks_in_day
         
         #self.new = True # SCV ready to go sir
 
@@ -403,7 +402,7 @@ class Bed(Environment):
         self.checkFilled()
         if not self.filled:
             incoming = np.random.choice([1,0], p = [self.model.prob_new_patient, 1-self.model.prob_new_patient])
-            if (incoming == 1):
+            if (incoming == 1): # new Patient (inflow)
                 new_patient = Patient(self.model.num_Patients + self.model.cumul_patients, self.model, colonized = False, x = self.x, y = self.y)
                 self.model.schedule.add(new_patient)
                 self.model.grid.place_agent(new_patient, (self.x, self.y))

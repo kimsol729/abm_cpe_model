@@ -52,7 +52,7 @@ paths = np.concatenate((path_A, path_B))
 class CPE_Model(Model):
     """A model with some number of agents."""
     def __init__(self, 
-    prob_patient_sick, 
+    inflow_date,
     prob_new_patient, 
     prob_transmission, 
     isolation_factor, 
@@ -63,7 +63,34 @@ class CPE_Model(Model):
         self.num_Patients = 30
 
         # 기본 parameter
-        self.prob_patient_sick = prob_patient_sick
+        if inflow_date == '2017-1':
+            self.inflow_date = [1,90] # list
+            self.hospital_period = 7.0 # exp(lambda)
+        elif inflow_date == '2017-2':
+            self.inflow_date = [1,45, 90, 135] # list
+            self.hospital_period = 6.26 # exp(lambda)
+        elif inflow_date == '2018-1':
+            self.inflow_date = [1] # list
+            self.hospital_period = 8.32 # exp(lambda)
+        elif inflow_date == '2021-1':
+            self.inflow_date = [1, 17, 33, 49, 65, 81, 97, 113, 129, 145, 161] # list
+            self.hospital_period = 15,95 # exp(lambda)
+        elif inflow_date == '2021-2':
+            self.inflow_date = [1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161] # list
+            self.hospital_period = 16.74 # exp(lambda)
+        elif inflow_date == '2022-1':
+            self.inflow_date = [1, 12, 23, 34, 45, 56 ,67, 78, 89, 100, 111, 123, 134, 145, 156, 168] # list
+            self.hospital_period = 18.96 # exp(lambda)
+        elif inflow_date == '2022-2':
+            self.inflow_date = [1,9, 17, 25, 33, 41, 49, 57, 65, 73, 91, 99, 107, 115, 123, 131, 139, 147, 155, 163, 171] # list
+            self.hospital_period = 13.32 # exp(lambda)
+        elif inflow_date == '2023-1':
+            self.inflow_date = [1, 13, 25, 37, 49, 61, 73, 85, 97, 109, 121, 133, 145, 157] # list
+            self.hospital_period = 15.71 # exp(lambda)
+        elif inflow_date == '2023-2':
+            self.inflow_date = [1, 8, 15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 120, 127, 134, 141, 148, 155, 162, 169] # list
+            self.hospital_period = 11.45 # exp(lambda)
+            
         self.prob_new_patient = prob_new_patient # geometric rv
         self.prob_transmission = prob_transmission
         self.isolation_factor = isolation_factor
@@ -74,13 +101,13 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
-        self.ticks_in_hour = 3 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 36 * 3 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
         self.day = 0
 
         self.schedule = BaseScheduler(self)
-
-
+        self._steps = 0
+        self._time = 0
         # Data collect variables 설정
         self.discharged = []
         self.current_patients = [] # List of all patients
@@ -94,6 +121,7 @@ class CPE_Model(Model):
         self.cumul_patients = self.num_Patients # cumulative patients (*)
         self.cumul_sick_patients = 0 # cumulative sick patients (*)
         self.num_infecByHCW = 0 # HCW에 의한 감염환자 수 (*)
+        self.P_I = 0
         self.num_move2isol = 0 # 검사로 인해 Isolated bed로 옮겨지는 환자 수 (*)
 
         # Create Agents
@@ -225,12 +253,12 @@ class CPE_Model(Model):
         self.running = True
 
     def step(self):
-
         self.datacollector.collect(self)
         self.schedule.step()
         self.schedule.time %= self.ticks_in_day # to keep the number from getting too large
         if self.schedule.time == 0:
             self.day += 1
+            print("day : ", self.day)
         # sommon Nurse
         if self.schedule.time % self.ticks_in_hour == 0:
             self.summoner = self.schedule.time // self.ticks_in_hour
@@ -303,3 +331,4 @@ class CPE_Model(Model):
     # def run_model(self, n):
     #     for i in range(n):
     #         self.step()
+# %%
