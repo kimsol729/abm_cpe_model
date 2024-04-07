@@ -1,4 +1,3 @@
-
 #%%
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid
@@ -8,7 +7,6 @@ from model.cpe_model import CPE_Model
 from model.agents import *
 import matplotlib.pyplot as plt
 
-#%%
 def agent_portrayal(agent):
     portrayal = {"Shape":"circle",
                     "Filled": "true",
@@ -26,9 +24,9 @@ def agent_portrayal(agent):
             # if agent.infecByHCW == True:
             #     portrayal["Color"] = "#FFA500" # orange
             # else:
-            portrayal["Color"] = "#000000"
+            portrayal["Color"] = "#de1616"
             portrayal["Layer"] = 2
-            portrayal["r"] = .4
+            portrayal["r"] = .3
             if agent.isol_time > 0:
                 portrayal["text"] = f"Isol Time: {np.round(agent.isol_time/agent.model.ticks_in_day,2)}"
                 portrayal["Color"] = "#cd5c5c" # 격리실로 옮겨질 예정
@@ -133,39 +131,28 @@ chart = ChartModule(
 
 
 model_params = {
-    # "num_HCWs": UserSettableParameter(
-    #     "slider", #param type
-    #     "Nurses", #name
-    #     10, #default value
-    #     1, # min value
-    #     10, #max value
-    #     1, # step
-    #     description="How many HCWs?",
-    # ),
-    
-    "hcw_wash_rate": UserSettableParameter(
-        "slider", #param type
-        "Handwash probability (ICU worker)", #name
-        .9, #default value
-        .1, # min value
-        1, #max value
-        .05, # step
-        #description="How many HCWs?",
-    ),
-    
-    # "outside_hcw_wash_rate": UserSettableParameter(
-    #     "slider", #param type
-    #     "Handwash probability (outside worker)", #name
-    #     .8, #default value
-    #     .1, # min value
-    #     1, #max value
-    #     .05, # step
-    #     #description="How many HCWs?",
-    # ),
-    
-    # "num_Patients": 30,
 
-    # "num_Goo": 30,
+    "prob_transmission": UserSettableParameter(
+        "slider", #param type
+        "Probability of transmission", #name
+        .1, #default value
+        0, # min value
+        1, #max value
+        .1, # step
+        description="Probability of transmission",
+    ),
+
+
+    "prob_new_patient": UserSettableParameter(
+        "slider", #param type
+        "Probability of a admission of new patient", #name
+        .1, #default value
+        0, # min value
+        1, #max value
+        .1, # step
+        description="Probability of a admission of new patient",
+    ),
+
 
     "prob_patient_sick": UserSettableParameter(
         "slider", #param type
@@ -177,14 +164,24 @@ model_params = {
         description="Probability that incoming patient is already sick",
     ),
 
-    "prob_new_patient": UserSettableParameter(
+    "isolation_factor": UserSettableParameter(
         "slider", #param type
-        "Probability of a admission of new patient", #name
-        .1, #default value
+        "Isolation factor", #name
+        .2, #default value
         0, # min value
         1, #max value
         .1, # step
-        description="Probability of a admission of new patient",
+        description="How safe are the isolated beds?",
+    ),
+
+    "hcw_wash_rate": UserSettableParameter(
+        "slider", #param type
+        "Handwash probability (ICU worker)", #name
+        .9, #default value
+        .1, # min value
+        1, #max value
+        .05, # step
+        #description="How many HCWs?",
     ),
 
     "cleaningDay": UserSettableParameter(
@@ -197,27 +194,6 @@ model_params = {
             description="How often to wash hands?",
         ),
 
-    "prob_transmission": UserSettableParameter(
-        "slider", #param type
-        "Probability of transmission", #name
-        .1, #default value
-        0, # min value
-        1, #max value
-        .1, # step
-        description="Probability of transmission",
-    ),
-    
-    "isolation_factor": UserSettableParameter(
-        "slider", #param type
-        "Isolation factor", #name
-        .2, #default value
-        0, # min value
-        1, #max value
-        .1, # step
-        description="How safe are the isolated beds?",
-    ),
-    
-
       "isolation_time": UserSettableParameter(
         "slider", #param type
         "Isolated Period for sick patients", #name
@@ -227,13 +203,6 @@ model_params = {
         1, # step
         description="Up to how long after you get infected, you'll be taken to the isolation room",
     ),
-    
-    # "randomMotion": UserSettableParameter(
-    #     "checkbox", #param type
-    #     "Random Motion", #name
-    #     value = False, #default value
-    #     #description="",
-    # ),
 
     "width": 32, # sets which squares agents occupy
     "height": 11,
@@ -246,7 +215,7 @@ class TickCounter(TextElement):
 tick_counter = TickCounter()
 server = ModularServer(CPE_Model, [grid, chart, tick_counter], "CPE Model", model_params)
 # server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
-server.port = 8502
+server.port = 8517
 server.launch()
 # %%
 

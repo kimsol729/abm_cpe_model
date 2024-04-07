@@ -2,8 +2,6 @@ from mesa import Agent
 import numpy as np
 import random
 # from model.routes import length_stay
-
-
 ICUA = ['A14','A15','A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13']
 ICUB = ['B14','B15','B1','B2','B3','B4','B5','B6','B7','B8','B9','B10','B11','B12','B13']
 length_stay = np.array([203,68,117,46,10,5,12,271,40,78,54,13,10,5,13,29,15,54,79,19,36,5,7,69,8,13,7,64,25,67,44,230,208,65,6,8,4,16,1,4,3,16,27,6,41,73,21,21,127,22,33,3,43,41,10,16,16,1,60,30,9,43,103,22,83,5,39,22,6,25,33,4,8,109,37,24,23,70,11,21,14,58,9,3,10,40,13,26,32])
@@ -471,7 +469,7 @@ class Goo(Environment):
         super().__init__(unique_id, model, colonized, x, y)
         self.isGoo = True
         self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
-        
+                
         if self.x <= 7 or self.x >= 23:
             self.isolated = True
         else:

@@ -1,18 +1,18 @@
 #%%
+import numpy as np
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.time import BaseScheduler, RandomActivation, SimultaneousActivation
-import numpy as np
 from mesa.space import MultiGrid
 from model.agents import *
 
 #%%
-def getNumSick(model): # 2.5명의 환자가 대체 뭘 말하는 거냐.........
+def getNumSick(model):
     """for patients"""
     count = 0
-    l = [(agent.isPatient and agent.colonized) for agent in model.schedule.agents] # 모든 agent
+    l = [(agent.isPatient and agent.colonized) for agent in model.schedule.agents]
     for i in l:
-        if i: # i is patient # true의 개수를 세는 함수.
+        if i:
             count += 1
     return count
 
@@ -245,6 +245,23 @@ class CPE_Model(Model):
             self.schedule.remove(ex_patient)
             self.discharged.remove(ex_patient)
 
+
+        # for bed in self.shared_beds: # 7-person room
+        #     if bed.filledSick:
+        #         cellmates = self.grid.get_cell_list_contents([bed.pos])
+        #         sickguy = next((cellmate for cellmate in cellmates if cellmate.isPatient and cellmate.move2isol), None)
+        #         if sickguy:
+        #             empty_isol_beds = [ibed for ibed in self.isol_beds if not ibed.filledSick and not ibed.filled]
+        #             if empty_isol_beds:
+        #                 healthyguy = next((icellmate for ibed in empty_isol_beds for icellmate in self.grid.get_cell_list_contents([ibed.pos]) if icellmate.isPatient), None)
+        #                 if healthyguy:
+        #                     self.grid.move_agent(sickguy, (empty_isol_beds[0].x, empty_isol_beds[0].y))
+        #                     self.num_move2isol += 1
+        #                     print("MOVE 2 ISOLATION!!!")
+        #                     self.grid.move_agent(healthyguy, (bed.x, bed.y))
+        #                     empty_isol_beds[0].checkFilled() # to label the bed filled
+
+
         # Move patients to Isolated beds
         for bed in self.shared_beds: # 7-person room
             if bed.filledSick:
@@ -286,6 +303,3 @@ class CPE_Model(Model):
     # def run_model(self, n):
     #     for i in range(n):
     #         self.step()
-# %%
-
-# %%
