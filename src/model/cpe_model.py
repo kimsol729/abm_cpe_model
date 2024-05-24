@@ -74,7 +74,7 @@ class CPE_Model(Model):
             self.hospital_period = 8.32 # exp(lambda)
         elif inflow_date == '2021-1':
             self.inflow_date = [1, 17, 33, 49, 65, 81, 97, 113, 129, 145, 161] # list
-            self.hospital_period = 15,95 # exp(lambda)
+            self.hospital_period = 15.95 # exp(lambda)
         elif inflow_date == '2021-2':
             self.inflow_date = [1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 131, 141, 151, 161] # list
             self.hospital_period = 16.74 # exp(lambda)
@@ -90,7 +90,14 @@ class CPE_Model(Model):
         elif inflow_date == '2023-2':
             self.inflow_date = [1, 8, 15, 22, 29, 36, 43, 50, 57, 64, 71, 78, 85, 92, 99, 106, 113, 120, 127, 134, 141, 148, 155, 162, 169] # list
             self.hospital_period = 11.45 # exp(lambda)
-            
+        elif inflow_date == 'test0':
+            self.inflow_date = [1] # list
+            self.hospital_period = 11.45 # exp(lambda)
+        elif inflow_date == 'test100':
+            self.inflow_date = list(range(1, 181))# list
+            self.hospital_period = 11.45 # exp(lambda)
+
+
         self.prob_new_patient = prob_new_patient # geometric rv
         self.prob_transmission = prob_transmission
         self.isolation_factor = isolation_factor
