@@ -98,9 +98,9 @@ def agent_portrayal(agent):
         portrayal["w"] = .8 #width
         portrayal["h"] = .8 #height of rectangle
         if agent.colonized == True:
-            portrayal["Color"] = "#808000"
+            portrayal["Color"] = "#cfb574"
         else:
-            portrayal["Color"] = "#00FF00"
+            portrayal["Color"] = "#9ccedb"
 
     # if agent.isEnvironment == True:
     #     portrayal = {"Shape":"rect",
@@ -131,31 +131,20 @@ chart = ChartModule(
 
 
 model_params = {
-
-    "prob_transmission": Slider(
-        "Probability of transmission", #name
-        .1, #default value
-        0, # min value
-        1, #max value
-        .1, # step
-        description="Probability of transmission",
-    ),
-    
     "inflow_date": Choice(
         'Duration',
         value='2017-1',
         choices=['2017-1', '2017-2', '2018-1', '2021-1', '2021-2','2022-1' ,'2022-2']
     ),
 
-    "hospital_period": Slider(
-        "hospital period", #name
-        14, #default value
-        1, # min value
-        21, #max value
-        1, # step
-        description="Average hospital period",
+    "prob_transmission": Slider(
+        "Probability of transmission", #name
+        0.00005, #default value
+        0.00001, # min value
+        0.01, #max value
+        0.00001, # step
+        description="Probability of transmission",
     ),
-
 
     "prob_new_patient": Slider(
         "Probability of a admission of new patient", #name
@@ -212,7 +201,6 @@ class TickCounter(TextElement):
 
 tick_counter = TickCounter()
 server = ModularServer(CPE_Model, [grid, chart, tick_counter], "CPE Model", model_params)
-# server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
-server.port = 8517
+server.port = 8511
 server.launch()
 # %%

@@ -108,7 +108,6 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
-        self.ticks_in_hour = 36 * 3 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
         self.day = 0
 
@@ -228,7 +227,7 @@ class CPE_Model(Model):
                 self.grid.place_agent(b, (b.x, b.y))
                 self.shared_beds.append(b)
 
-            #Patients
+            # Patients
             a = Patient(self.num_Patients + i, self, colonized = False, x = xpos, y = ypos)#30~60
             self.schedule.add(a)
             self.grid.place_agent(a, (a.x, a.y))
@@ -241,9 +240,9 @@ class CPE_Model(Model):
 
             #Goo
             if ypos > 5: # top row
-                d = Goo(-self.num_Patients - i, self, colonized = True, x=xpos, y=ypos-1) #-30~-60
+                d = Goo(-self.num_Patients - i, self, colonized = False, x=xpos, y=ypos-1) #-30~-60
             else: # bottom row
-                d = Goo(-self.num_Patients - i, self, colonized = True, x=xpos, y=ypos+1) #-30~-60
+                d = Goo(-self.num_Patients - i, self, colonized = False, x=xpos, y=ypos+1) #-30~-60
             self.schedule.add(d)
             self.grid.place_agent(d, (d.x, d.y))
 

@@ -163,19 +163,20 @@ class HCW(CPE_Agent):
                         if other.isolated: #other.isPatient and other.isolated: #for isolated patients, decrease by a factor
                             prob_transmission *= self.model.isolation_factor
                         infect = np.random.choice([1,0], p = [prob_transmission, 1-prob_transmission]) # note that we did not use self.model.prob_transmission
-
-                        if infect == 1:
-                            if other.isPatient and not other.colonized: # nonsick patient
+                        
+                        if other.isPatient and not other.colonized: # nonsick patient
+                            if infect == 1:
                                 other.colonized = True
                                 other.stay += 7*self.model.ticks_in_day #lengthen the stay
                                 if not other.isolated: # in the shared beds
                                     other.isol_time = np.random.randint(1,self.model.isolation_time)*self.model.ticks_in_day # unif dist, bcz we dont know dist.
-                                print("patient stay: ", other.stay)
-                                print("patient d-day: ", other.isol_time)
+                                # print("patient stay: ", other.stay)
+                                # print("patient d-day: ", other.isol_time)
                                 self.model.cumul_sick_patients += 1
-                                self.model.num_infecByHCW += 1    
-                            else: # (other.isGoo):
-                                other.colonized = True
+                                self.model.num_infecByHCW += 1
+                                print("P_HAI:",self.model.num_infecByHCW)
+                        else:                                     # (other.isGoo):
+                            other.colonized = True
                     
                     else: #get infected
                         if other.colonized:
@@ -339,22 +340,23 @@ class Patient(CPE_Agent):
         self.isPatient = True
         self.isol_time = -1
         self.move2isol = False
+        self.preinfection = False
         #self.infecByHCW = False # in the beginning, nobody is infected by HCW
         
         self.checkIsolated()
         self.model.current_patients.append(self)
 
         # how to determine patient sick
-        if int(self.model.P_I) < sum(1 for num in self.model.inflow_date if num < self.model.day):
+        if int(self.model.P_I) < sum(1 for num in self.model.inflow_date if num <= self.model.day):
             self.colonized = True
+            self.preinfection = True
             self.model.P_I += 1
-            print(f"happen P_I >>> today: {self.model.day}")
-            print(f"Real data date: {self.model.inflow_date[int(self.model.P_I - 1)]}")
+            print("P_I : ",self.model.P_I)
+            print(f"today: {self.model.day}")
+            # print(f"Real data date: {self.model.inflow_date[int(self.model.P_I - 1)]}")
 
         # hospital_period
         self.stay = round(np.random.exponential(scale=self.model.hospital_period)) * self.model.ticks_in_day
-        
-        #self.new = True # SCV ready to go sir
 
         self.positive = False
         
