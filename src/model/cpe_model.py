@@ -108,6 +108,7 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
+        self.ticks_in_hour = 36 * 3 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
         self.day = 0
 
@@ -264,7 +265,7 @@ class CPE_Model(Model):
         self.schedule.time %= self.ticks_in_day # to keep the number from getting too large
         if self.schedule.time == 0:
             self.day += 1
-            print("day : ", self.day)
+            # print("day : ", self.day)
         # sommon Nurse
         if self.schedule.time % self.ticks_in_hour == 0:
             self.summoner = self.schedule.time // self.ticks_in_hour

@@ -163,9 +163,9 @@ class HCW(CPE_Agent):
                         if other.isolated: #other.isPatient and other.isolated: #for isolated patients, decrease by a factor
                             prob_transmission *= self.model.isolation_factor
                         infect = np.random.choice([1,0], p = [prob_transmission, 1-prob_transmission]) # note that we did not use self.model.prob_transmission
-                        
-                        if other.isPatient and not other.colonized: # nonsick patient
-                            if infect == 1:
+                        if infect == 1:
+                            if other.isPatient and not other.colonized: # nonsick patient
+                            
                                 other.colonized = True
                                 other.stay += 7*self.model.ticks_in_day #lengthen the stay
                                 if not other.isolated: # in the shared beds
@@ -175,9 +175,9 @@ class HCW(CPE_Agent):
                                 self.model.cumul_sick_patients += 1
                                 self.model.num_infecByHCW += 1
                                 print("P_HAI:",self.model.num_infecByHCW)
-                        else:                                     # (other.isGoo):
-                            other.colonized = True
-                    
+                            else:                                     # (other.isGoo):
+                                other.colonized = True
+                        
                     else: #get infected
                         if other.colonized:
                             if other.isolated:
