@@ -174,7 +174,7 @@ class HCW(CPE_Agent):
                                 # print("patient d-day: ", other.isol_time)
                                 self.model.cumul_sick_patients += 1
                                 self.model.num_infecByHCW += 1
-                                print("P_HAI:",self.model.num_infecByHCW)
+                                # print("P_HAI:",self.model.num_infecByHCW)
                             else:                                     # (other.isGoo):
                                 other.colonized = True
                         
@@ -343,6 +343,7 @@ class Patient(CPE_Agent):
         self.preinfection = False
         #self.infecByHCW = False # in the beginning, nobody is infected by HCW
         
+
         self.checkIsolated()
         self.model.current_patients.append(self)
 
@@ -372,6 +373,23 @@ class Patient(CPE_Agent):
         if self.stay == 0:
             self.model.current_patients.remove(self)
             self.model.discharged.append(self)
+
+            if (self.y == 10 or self.y == 8):
+                cellmates = self.model.grid.get_cell_list_contents([(self.x, self.y - 1)])
+                if len(cellmates)>1:
+                    for other in cellmates:
+                        if other.isGoo and other.colonized:
+                            other.handwash()
+                            print("Outpatient and cleaning Goo")
+
+
+            if (self.y == 1 or self.y == 3):
+                cellmates = self.model.grid.get_cell_list_contents([(self.x, self.y + 1)])
+                if len(cellmates)>1:
+                    for other in cellmates:
+                        if other.isGoo and other.colonized:
+                            other.handwash()
+                            print("Outpatient and cleaning Goo")
         
         if self.isol_time == 0:
             self.move2isol = True
@@ -470,21 +488,27 @@ class Goo(Environment):
         super().__init__(unique_id, model, colonized, x, y)
         self.isGoo = True
         self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
+        # self.natural_clean_tick =  self.model.extinction * self.model.ticks_in_day
                 
         if self.x <= 7 or self.x >= 23:
             self.isolated = True
         else:
             self.isolated = False
     def handwash(self): # 100%
-        #wash = np.random.choice([1,0], p = [.9, .1]) # fixed proability based on data       
-        #if wash:
-        self.colonized = False
+        wash = np.random.choice([1,0], p = [.9, .1]) # fixed proability based on data       
+        if wash:
+            self.colonized = False
         
     def step(self):
         #self.checkFilled()
         self.clean_tick -= 1
+        # self.natural_clean_tick -= 1
         
-        if (self.clean_tick <= 0):
-            self.handwash()
-            self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
+        # if (self.clean_tick <= 0):
+        #     self.handwash()
+        #     self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
+
+        # if (self.natural_clean_tick <= 0):
+        #     self.handwash()
+            # self.clean_tick = self.model.extinction * self.model.ticks_in_day
 # make a patient class, test run

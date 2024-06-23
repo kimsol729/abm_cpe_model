@@ -201,6 +201,6 @@ class TickCounter(TextElement):
 
 tick_counter = TickCounter()
 server = ModularServer(CPE_Model, [grid, chart, tick_counter], "CPE Model", model_params)
-server.port = 8511
+server.port = 8515
 server.launch()
 # %%

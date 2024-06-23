@@ -6,16 +6,17 @@ import os
 import time
 import pandas as pd
 import numpy as np
+
 import matplotlib.pyplot as plt
 # %%
-today = 240407
+today = 240515
 num_iter = 50; np.int64(num_iter)
 
 # Parameters
 cleanDay = 180
 washrate = 0.9
 isolationTime = 14
-duration = '2017-1'
+duration = '2017-2'
 runtime = 180 # 6 months
 probNewPatient = 0.003 # 0.053, Old Calibration # 1/2000, 2592 ticks per day
 probTransmission = 0.00005 # calibration result
@@ -26,7 +27,7 @@ width=32
 params = {
     "inflow_date" : duration, 
     "prob_new_patient" : probNewPatient, 
-    "prob_transmission" : [0.001, 0.0001, 0.00001, 0.000001],
+    "prob_transmission" :  [0.02, 0.03],#[0.00001, 0.0001, 0.001, 0.01],
     "isolation_factor" : isolationFactor, 
     "cleaningDay" : cleanDay,
     "hcw_wash_rate" : washrate, 
@@ -35,7 +36,7 @@ params = {
     }
 
 csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/beta_{}.csv'.format(today))
+    'result/goo_new_beta_{}_010_017.csv'.format(duration))
 start_time = time.time()
 
 # %% STEP4
@@ -84,4 +85,5 @@ data_mean = results_df.groupby(["prob_transmission"])[['HCW related infections',
 print(data_mean)
 print('\n\n')
 print("--- %s seconds ---" % (time.time() - start_time))
+
 # %%
