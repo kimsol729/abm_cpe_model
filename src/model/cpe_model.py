@@ -16,6 +16,22 @@ def getNumSick(model):
             count += 1
     return count
 
+def getNumEnv(model):
+    """for Env"""
+    count = 0
+    l = [(agent.isGoo and agent.colonized) for agent in model.schedule.agents]
+    for i in l:
+        if i:
+            count += 1
+    return count
+
+def getMaxEnv(model):
+    if len(model.NumEnv)==0:
+        max = 0
+    else:
+        max = np.max(model.NumEnv)
+    return max
+
 def getNumColonized(model):
     """for HCW"""
     count = 0
@@ -61,6 +77,7 @@ class CPE_Model(Model):
 
         self.num_HCWs = 10
         self.num_Patients = 30
+        self.NumEnv = []
 
         # 기본 parameter
         if inflow_date == '2017-1':
@@ -108,7 +125,7 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
-        self.ticks_in_hour = 36 * 3 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 3 * 36 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
         self.day = 0
 
@@ -249,20 +266,31 @@ class CPE_Model(Model):
 
 
         self.datacollector = DataCollector(
-            model_reporters={"Number of Patients sick": getNumSick,
-                    "Number of HCW colonized": getNumColonized,
-                    "Cumulative number of colonized patients": getCumulNumSick,
-                    "HCW related infections": getHCWInfec,
-                    "Cumulative Patients": getCumul,
-                    "Move to isolation": getNumIsol
-                    })
+            model_reporters={
+                # "Number of Patients sick": getNumSick,
+                # "Number of HCW colonized": getNumColonized,
+                # "Cumulative number of colonized patients": getCumulNumSick,
+                "HCW related infections": getHCWInfec,
+                "Cumulative Patients": getCumul,
+                # "Move to isolation": getNumIsol
+                "Colonized Goo": getNumEnv,
+                "Max Colonized Goo": getMaxEnv
+                })
 
         self.running = True
 
     def step(self):
         self.datacollector.collect(self)
+        data = self.datacollector.get_model_vars_dataframe()
+        if not data.empty:
+            self.NumEnv.extend(data["Colonized Goo"].tolist())
+            
+        # if not len(data["Colonized Goo"]) == 0:
+        #     if count<=NumEnv:
+        #         count = NumEnv
         self.schedule.step()
         self.schedule.time %= self.ticks_in_day # to keep the number from getting too large
+        
         if self.schedule.time == 0:
             self.day += 1
             # print("day : ", self.day)
