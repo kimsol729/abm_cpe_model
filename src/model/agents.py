@@ -73,11 +73,9 @@ class HCW(CPE_Agent):
             self.handwash()
         # Non random motion by default
         x, y = self.pos
-        #print("Self pos: ", self.pos)
         k = len(self.path)
         ## DESTINATION SETTING. We must set the destination
         
-
         destination = room2coord(self.path[self.moveTick])
 
 
@@ -206,9 +204,8 @@ class Nurse(HCW):
         self.workHours = 8
 
     def step(self):
-        # print("Hi, I am Nurse " + str(self.unique_id) + ".")
         if self.model.summon:
-            if self.model.summoner > 0 and self.model.summoner < 16: # 반복되는거같아
+            if self.model.summoner > 0 and self.model.summoner < 16:
                 if self.model.summoner < 8 or self.model.summoner > 13: # on the east wing of the ICU
                     nurses_A = {-1,-2,-3} # ID of the nurses in east wing
                     nurses_B = {-6,-7,-8}
@@ -291,10 +288,10 @@ class Dr(HCW):
                     self.model.grid.move_agent(self, new_position)
             
         else: # found
+            self.reachedHall = False
             pass # get some rest
     
     def step(self):
-        # print("Hi, I am Doctor " + str(self.unique_id) + ".")
         if self.model.schedule.time > self.startTime and self.model.schedule.time < self.endTime:
             self.activated = True
         elif self.model.schedule.time == self.endTime:
@@ -319,11 +316,10 @@ class XrayDr(Dr):
     
     
     def step(self):
-        # print("Hi, I am Xray Dortor " + str(self.unique_id) + ".")
         if self.model.schedule.time % (self.model.ticks_in_day / self.shiftsPerDay)== 0:
             self.activated = True
 
-        if self.pos == room2coord(self.last_patient): # 얘는 왜 일 다 끝났는데 colonizes False 없지? Dr의 성질을 그대로 물려받아서?
+        if self.pos == room2coord(self.last_patient):
             self.activated = False
             self.reachedHall = False
             self.moveTick = 0
@@ -356,10 +352,13 @@ class Patient(CPE_Agent):
             self.model.P_I += 1
             print("P_I : ",self.model.P_I)
             print(f"today: {self.model.day}")
-            # print(f"Real data date: {self.model.inflow_date[int(self.model.P_I - 1)]}")
 
         # hospital_period
-        self.stay = round(np.random.exponential(scale=self.model.hospital_period)) * self.model.ticks_in_day
+        # if self.unique_id < 31:
+        #     self.stay = round(np.random.exponential(scale=self.model.hospital_period)) * self.model.ticks_in_day
+        # else: 
+        self.stay = self.model.hospital_period * self.model.ticks_in_day
+
         self.positive = False
         
     def checkIsolated(self):
@@ -370,7 +369,8 @@ class Patient(CPE_Agent):
 
     def step(self):
         self.stay -= 1
-        self.isol_time -= 1
+        if self.isol_time > 0:
+            self.isol_time -= 1
         if self.stay == 0:
             self.model.current_patients.remove(self)
             self.model.discharged.append(self)

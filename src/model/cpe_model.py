@@ -78,7 +78,8 @@ class CPE_Model(Model):
         self.num_HCWs = 10
         self.num_Patients = 30
         self.NumEnv = []
-
+        self.running = True
+        
         # 기본 parameter
         if inflow_date == '2017-1':
             self.inflow_date = [1,90] # list
@@ -125,7 +126,7 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
-        self.ticks_in_hour = 3 * 36 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 3*36 # 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
         self.day = 0
 
@@ -251,10 +252,9 @@ class CPE_Model(Model):
             self.grid.place_agent(a, (a.x, a.y))
             if a.colonized == True:
                 self.cumul_sick_patients += 1
-                a.stay = np.random.randint(1,17+1) * self.ticks_in_day
-            else:
-                a.stay = np.random.randint(1,9+1) * self.ticks_in_day
-
+            
+            # a.stay = round(np.random.exponential(scale=self.hospital_period)) * self.ticks_in_day
+            a.stay = self.hospital_period * self.ticks_in_day
 
             #Goo
             if ypos > 5: # top row
@@ -264,22 +264,23 @@ class CPE_Model(Model):
             self.schedule.add(d)
             self.grid.place_agent(d, (d.x, d.y))
 
-
+        
         self.datacollector = DataCollector(
             model_reporters={
                 # "Number of Patients sick": getNumSick,
                 # "Number of HCW colonized": getNumColonized,
                 # "Cumulative number of colonized patients": getCumulNumSick,
                 "HCW related infections": getHCWInfec,
-                "Cumulative Patients": getCumul,
+                # "Cumulative Patients": getCumul,
                 # "Move to isolation": getNumIsol
                 "Colonized Goo": getNumEnv,
-                "Max Colonized Goo": getMaxEnv
+                # "Max Colonized Goo": getMaxEnv
                 })
-
-        self.running = True
+    
+        # self.running = True
 
     def step(self):
+        
         self.datacollector.collect(self)
         data = self.datacollector.get_model_vars_dataframe()
         if not data.empty:
@@ -290,10 +291,10 @@ class CPE_Model(Model):
         #         count = NumEnv
         self.schedule.step()
         self.schedule.time %= self.ticks_in_day # to keep the number from getting too large
-        
+        # print(f"time : {self.schedule.time}")
         if self.schedule.time == 0:
             self.day += 1
-            # print("day : ", self.day)
+            print("day : ", self.day)
         # sommon Nurse
         if self.schedule.time % self.ticks_in_hour == 0:
             self.summoner = self.schedule.time // self.ticks_in_hour
@@ -366,4 +367,3 @@ class CPE_Model(Model):
     # def run_model(self, n):
     #     for i in range(n):
     #         self.step()
-# %%

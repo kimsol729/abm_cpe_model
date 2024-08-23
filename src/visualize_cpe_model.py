@@ -12,6 +12,8 @@ def agent_portrayal(agent):
                     "Filled": "true",
                     "r": 0.4}
     if agent.isPatient == True:
+        portrayal["text"] = f"gamma : {np.round(agent.stay /agent.model.ticks_in_day)}"
+        portrayal["Color"] = "#cd5c5c"
         # First start with Patients
         if agent.colonized == False:
                 portrayal["Color"] = "#666666" # 아프지 않은 환자
@@ -27,9 +29,9 @@ def agent_portrayal(agent):
             portrayal["Color"] = "#de1616"
             portrayal["Layer"] = 2
             portrayal["r"] = .3
-            if agent.isol_time > 0:
-                portrayal["text"] = f"Isol Time: {np.round(agent.isol_time/agent.model.ticks_in_day,2)}"
-                portrayal["Color"] = "#cd5c5c" # 격리실로 옮겨질 예정
+
+            # portrayal["text"] = f"gamma: {np.round(agent.stay/agent.model.ticks_in_day,2)}"
+            # 격리실로 옮겨질 예정
 
             # if agent.stay <= 4*agent.model.ticks_in_day and agent.stay > 2*agent.model.ticks_in_day:
             #     portrayal["Color"] = "#CD5C5C" # indianred
