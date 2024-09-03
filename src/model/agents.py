@@ -175,9 +175,7 @@ class HCW(CPE_Agent):
                                 # print("P_HAI:",self.model.num_infecByHCW)
                             else:                                     # (other.isGoo):
                                 other.colonized = True
-                                other.natural_clean_tick = round(np.random.exponential(scale=30)) * self.model.ticks_in_day
-                                # print("Colonized Goo position:",other.x, other.y)
-                                # print("Goo Natural clean period:",other.clean_tick/self.model.ticks_in_day)
+
                     else: #get infected
                         if other.colonized:
                             if other.isolated:
@@ -353,11 +351,7 @@ class Patient(CPE_Agent):
             print("P_I : ",self.model.P_I)
             print(f"today: {self.model.day}")
 
-        # hospital_period
-        # if self.unique_id < 31:
-        #     self.stay = round(np.random.exponential(scale=self.model.hospital_period)) * self.model.ticks_in_day
-        # else: 
-        self.stay = self.model.hospital_period * self.model.ticks_in_day
+        self.stay = np.round(self.model.hospital_period) * self.model.ticks_in_day
 
         self.positive = False
         
@@ -374,27 +368,9 @@ class Patient(CPE_Agent):
         if self.stay == 0:
             self.model.current_patients.remove(self)
             self.model.discharged.append(self)
-            # outpatient -> Goo cleaning
-            # if (self.y == 10 or self.y == 8):
-            #     cellmates = self.model.grid.get_cell_list_contents([(self.x, self.y - 1)])
-            #     if len(cellmates)>1:
-            #         for other in cellmates:
-            #             if other.isGoo and other.colonized:
-            #                 other.handwash()
-            #                 print("Outpatient and cleaning Goo")
-
-            # if (self.y == 1 or self.y == 3):
-            #     cellmates = self.model.grid.get_cell_list_contents([(self.x, self.y + 1)])
-            #     if len(cellmates)>1:
-            #         for other in cellmates:
-            #             if other.isGoo and other.colonized:
-            #                 other.handwash()
-            #                 print("Outpatient and cleaning Goo")
         
         if self.isol_time == 0:
             self.move2isol = True
-
-
         self.checkIsolated() #alters state if moved to/from isolated bed
     
 class Environment(CPE_Agent):
@@ -429,16 +405,20 @@ class Bed(Environment):
                 self.model.cumul_patients += 1
                 if new_patient.colonized:
                     self.model.cumul_sick_patients += 1
-            
+                # cleaning Goo
+                if self.pos[1] > 5: # top row
+                    cellmates = self.model.grid.get_cell_list_contents([(self.pos[0], self.pos[1]-1)])
+                    for cellmate in cellmates:
+                        if cellmate.isGoo and cellmate.colonized:
+                            cellmate.colonized = False
+                            break
+                else: # bottom row
+                    cellmates = self.model.grid.get_cell_list_contents([(self.pos[0], self.pos[1]+1)])
+                    for cellmate in cellmates:
+                        if cellmate.isGoo and cellmate.colonized:
+                            cellmate.colonized = False
+                            break
             self.checkFilled()
-            # self.model.empty_beds.add((self.x, self.y))
-        # else:
-        #     if (self.x, self.y) in self.model.empty_beds: # without checking element in set, there could be error. 
-        #         self.model.empty_beds.remove((self.x, self.y)) 
-        
-        # if self.filled == False:
-        #     self.colonized = False
-
 
     def checkFilled(self):
         self.filled = False
@@ -476,10 +456,6 @@ class IsolatedBed(Bed):
             if (self.x, self.y) in self.model.empty_beds: # without checking element in set, there could be error. 
                 self.model.empty_beds.remove((self.x, self.y)) 
         self.checkFilled()
-        #print("Bed {}. Filled: {}, FilledSick: {}".format(self.unique_id, self.filled, self.filledSick))
-        
-        #if self.filled == False:
-        #    self.colonized = False
 
 class Goo(Environment):
     """ An agent with colonized status.
@@ -488,7 +464,6 @@ class Goo(Environment):
         super().__init__(unique_id, model, colonized, x, y)
         self.isGoo = True
         self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
-        self.natural_clean_tick = -1
 
                 
         if self.x <= 7 or self.x >= 23:
@@ -503,16 +478,7 @@ class Goo(Environment):
     def step(self):
         #self.checkFilled()
         self.clean_tick -= 1
-        self.natural_clean_tick -= 1
         
         if (self.clean_tick <= 0):
             self.handwash()
             self.clean_tick = self.model.cleaningDay * self.model.ticks_in_day
-
-        if (self.natural_clean_tick <= 0):
-            if self.colonized:
-                print("Goo Natural clean period:",self.x, self.y, self.colonized)
-                self.colonized = False
-                
-            # self.clean_tick = round(np.random.exponential(scale=3)) * self.model.ticks_in_day
-# make a patient class, test run

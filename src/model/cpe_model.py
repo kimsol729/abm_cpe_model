@@ -253,8 +253,8 @@ class CPE_Model(Model):
             if a.colonized == True:
                 self.cumul_sick_patients += 1
             
-            # a.stay = round(np.random.exponential(scale=self.hospital_period)) * self.ticks_in_day
-            a.stay = self.hospital_period * self.ticks_in_day
+            a.stay = round(np.random.exponential(scale=self.hospital_period)) * self.ticks_in_day
+            # a.stay = np.round(self.hospital_period) * self.ticks_in_day
 
             #Goo
             if ypos > 5: # top row
@@ -273,58 +273,31 @@ class CPE_Model(Model):
                 "HCW related infections": getHCWInfec,
                 # "Cumulative Patients": getCumul,
                 # "Move to isolation": getNumIsol
-                "Colonized Goo": getNumEnv,
+                # "Colonized Goo": getNumEnv,
                 # "Max Colonized Goo": getMaxEnv
                 })
     
         # self.running = True
 
     def step(self):
-        
         self.datacollector.collect(self)
-        data = self.datacollector.get_model_vars_dataframe()
-        if not data.empty:
-            self.NumEnv.extend(data["Colonized Goo"].tolist())
-            
-        # if not len(data["Colonized Goo"]) == 0:
-        #     if count<=NumEnv:
-        #         count = NumEnv
         self.schedule.step()
         self.schedule.time %= self.ticks_in_day # to keep the number from getting too large
         # print(f"time : {self.schedule.time}")
         if self.schedule.time == 0:
             self.day += 1
-            print("day : ", self.day)
+            # print("day : ", self.day)
         # sommon Nurse
         if self.schedule.time % self.ticks_in_hour == 0:
             self.summoner = self.schedule.time // self.ticks_in_hour
             if self.summoner > 0 and self.summoner < 16: # only for patients 1~15
                 self.summon = True
 
-
-
         # remove patient
         for ex_patient in self.discharged:
             self.grid.remove_agent(ex_patient)
             self.schedule.remove(ex_patient)
             self.discharged.remove(ex_patient)
-
-
-        # for bed in self.shared_beds: # 7-person room
-        #     if bed.filledSick:
-        #         cellmates = self.grid.get_cell_list_contents([bed.pos])
-        #         sickguy = next((cellmate for cellmate in cellmates if cellmate.isPatient and cellmate.move2isol), None)
-        #         if sickguy:
-        #             empty_isol_beds = [ibed for ibed in self.isol_beds if not ibed.filledSick and not ibed.filled]
-        #             if empty_isol_beds:
-        #                 healthyguy = next((icellmate for ibed in empty_isol_beds for icellmate in self.grid.get_cell_list_contents([ibed.pos]) if icellmate.isPatient), None)
-        #                 if healthyguy:
-        #                     self.grid.move_agent(sickguy, (empty_isol_beds[0].x, empty_isol_beds[0].y))
-        #                     self.num_move2isol += 1
-        #                     print("MOVE 2 ISOLATION!!!")
-        #                     self.grid.move_agent(healthyguy, (bed.x, bed.y))
-        #                     empty_isol_beds[0].checkFilled() # to label the bed filled
-
 
         # Move patients to Isolated beds
         for bed in self.shared_beds: # 7-person room
@@ -360,10 +333,4 @@ class CPE_Model(Model):
                                     ibed.checkFilled() # to label the bed filled
                                 break
             else:
-                continue # 감염환자가 격리실로 옮겨지고 나서 bed.pos은 checkFilled() 안해줘도 되나요?
-                            # 매번 step에서 침대의 checkFilled()함수가 돌아가고 있습니다.
-                            # 매번 step에서 환자의 isolatedcheck함수가 돌아가고 있습니다. (그냥 여기다 해주면 굳이 매번할 필요 없지않나.)
-
-    # def run_model(self, n):
-    #     for i in range(n):
-    #         self.step()
+                continue

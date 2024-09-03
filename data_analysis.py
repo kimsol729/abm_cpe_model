@@ -239,7 +239,7 @@ df = df.dropna(subset=['out'])
 # 분석할 날짜 범위 설정
 start_date = pd.Timestamp('2021-01-01')
 end_date = pd.Timestamp('2024-01-01')
-date_ranges = pd.date_range(start=start_date, end=end_date, freq='6MS')
+date_ranges = pd.date_range(start=start_date, end=end_date, freq='1MS')
 
 #%%
 num_ps = []
@@ -354,4 +354,17 @@ plt.xticks(ticks=range(len(date_ranges)-1), labels=[date.strftime('%Y-%m') for d
 plt.legend()
 plt.show()
 
+# %%
+# 데이터프레임으로 변환
+date_labels = [date.strftime('%Y-%m') for date in date_ranges[:-1]]
+
+
+df_PI = pd.DataFrame(PI_counts, columns=['PI_counts'], index=date_labels)
+df_PHAI = pd.DataFrame(PHAI_counts, columns=['PHAI_counts'], index=date_labels)
+
+# 하나의 DataFrame으로 결합
+df_combined = pd.concat([df_PI, df_PHAI], axis=1)
+
+# CSV 파일로 저장
+df_combined.to_csv('data/dataB_per_months.csv', index=True)
 # %%
