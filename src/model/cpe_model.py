@@ -126,7 +126,7 @@ class CPE_Model(Model):
 
         self.grid = MultiGrid(width, height, torus =False)
 
-        self.ticks_in_hour = 3*36 # 36 ticks to visit 3 patients, 3 cycles per hour
+        self.ticks_in_hour = 1# 36 ticks to visit 3 patients, 3 cycles per hour
         self.ticks_in_day = 24 * self.ticks_in_hour
         self.day = 0
 
@@ -267,11 +267,11 @@ class CPE_Model(Model):
         
         self.datacollector = DataCollector(
             model_reporters={
-                # "Number of Patients sick": getNumSick,
-                # "Number of HCW colonized": getNumColonized,
-                # "Cumulative number of colonized patients": getCumulNumSick,
+                "Number of Patients sick": getNumSick,
+                "Number of HCW colonized": getNumColonized,
+                "Cumulative number of colonized patients": getCumulNumSick,
                 "HCW related infections": getHCWInfec,
-                # "Cumulative Patients": getCumul,
+                "Cumulative Patients": getCumul,
                 # "Move to isolation": getNumIsol
                 # "Colonized Goo": getNumEnv,
                 # "Max Colonized Goo": getMaxEnv

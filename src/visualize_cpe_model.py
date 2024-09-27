@@ -12,8 +12,7 @@ def agent_portrayal(agent):
                     "Filled": "true",
                     "r": 0.4}
     if agent.isPatient == True:
-        portrayal["text"] = f"gamma : {np.round(agent.stay /agent.model.ticks_in_day)}"
-        portrayal["Color"] = "#cd5c5c"
+
         # First start with Patients
         if agent.colonized == False:
                 portrayal["Color"] = "#666666" # 아프지 않은 환자
@@ -126,7 +125,7 @@ chart = ChartModule(
     # {"Label": "Total number of Patients", "Color": "#D2691E"},
     # {"Label": "Cumulative Patients", "Color": "#black"},
     {"Label": "HCW related infections", "Color": "black"},
-    {"Label": "Move to isolation", "Color": "#D2691E"}
+    # {"Label": "Move to isolation", "Color": "#D2691E"}
     ],
     data_collector_name="datacollector"
 )
@@ -135,16 +134,16 @@ chart = ChartModule(
 model_params = {
     "inflow_date": Choice(
         'Duration',
-        value='2017-1',
+        value='2022-1',
         choices=['2017-1', '2017-2', '2018-1', '2021-1', '2021-2','2022-1' ,'2022-2']
     ),
 
     "prob_transmission": Slider(
         "Probability of transmission", #name
-        0.00005, #default value
-        0.00001, # min value
-        0.01, #max value
-        0.00001, # step
+        0.5, #default value
+        0.1, # min value
+        1, #max value
+        0.01, # step
         description="Probability of transmission",
     ),
 
@@ -159,7 +158,7 @@ model_params = {
 
     "isolation_factor": Slider(
         "Isolation factor", #name
-        .2, #default value
+        .8, #default value
         0, # min value
         1, #max value
         .1, # step
@@ -168,7 +167,7 @@ model_params = {
 
     "hcw_wash_rate": Slider(
         "Handwash probability (ICU worker)", #name
-        .9, #default value
+        .5, #default value
         .1, # min value
         1, #max value
         .05, # step
