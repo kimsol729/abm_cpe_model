@@ -348,8 +348,8 @@ class Patient(CPE_Agent):
             self.colonized = True
             self.preinfection = True
             self.model.P_I += 1
-            print("P_I : ",self.model.P_I)
-            print(f"today: {self.model.day}")
+            # print("P_I : ",self.model.P_I)
+            # print(f"today: {self.model.day}")
 
         self.stay = np.round(self.model.hospital_period) * self.model.ticks_in_day
 

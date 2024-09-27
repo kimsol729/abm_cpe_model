@@ -320,7 +320,7 @@ class CPE_Model(Model):
                                             healthyguy = icellmate
                                             self.grid.move_agent(sickguy, (ibed.x, ibed.y))
                                             self.num_move2isol += 1
-                                            print("MOVE 2 ISOLATION!!!")
+                                            # print("MOVE 2 ISOLATION!!!")
                                             self.grid.move_agent(healthyguy, (bed.x, bed.y))
                                             ibed.checkFilled() # to label the bed filled
                                             break # we don't need to consider other icellmates
@@ -329,7 +329,7 @@ class CPE_Model(Model):
                                 else: # not filled
                                     self.grid.move_agent(sickguy, (ibed.x, ibed.y))
                                     self.num_move2isol += 1
-                                    print("MOVE 2 ISOLATION!!!")
+                                    # print("MOVE 2 ISOLATION!!!")
                                     ibed.checkFilled() # to label the bed filled
                                 break
             else:
