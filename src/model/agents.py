@@ -348,8 +348,8 @@ class Patient(CPE_Agent):
             self.colonized = True
             self.preinfection = True
             self.model.P_I += 1
-            # print("P_I : ",self.model.P_I)
-            # print(f"today: {self.model.day}")
+            #print("P_I : ",self.model.P_I)
+            #print(f"today: {self.model.day}")
 
         self.stay = np.round(self.model.hospital_period) * self.model.ticks_in_day
 
@@ -371,6 +371,8 @@ class Patient(CPE_Agent):
         
         if self.isol_time == 0:
             self.move2isol = True
+
+
         self.checkIsolated() #alters state if moved to/from isolated bed
     
 class Environment(CPE_Agent):
@@ -405,19 +407,7 @@ class Bed(Environment):
                 self.model.cumul_patients += 1
                 if new_patient.colonized:
                     self.model.cumul_sick_patients += 1
-                # cleaning Goo
-                if self.pos[1] > 5: # top row
-                    cellmates = self.model.grid.get_cell_list_contents([(self.pos[0], self.pos[1]-1)])
-                    for cellmate in cellmates:
-                        if cellmate.isGoo and cellmate.colonized:
-                            cellmate.colonized = False
-                            break
-                else: # bottom row
-                    cellmates = self.model.grid.get_cell_list_contents([(self.pos[0], self.pos[1]+1)])
-                    for cellmate in cellmates:
-                        if cellmate.isGoo and cellmate.colonized:
-                            cellmate.colonized = False
-                            break
+            
             self.checkFilled()
 
     def checkFilled(self):

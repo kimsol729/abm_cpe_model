@@ -4,7 +4,7 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.time import BaseScheduler, RandomActivation, SimultaneousActivation
 from mesa.space import MultiGrid
-from agents import *
+from model.agents import *
 import sys
 import os
 import pandas as pd
@@ -46,10 +46,11 @@ class CPE_Model_month(Model):
         self.num_Patients = 30
         self.NumEnv = []
         self.running = True
-        
+
         # 기본 parameter
         if data_type == 'A':
-            csv_path = '/home/whiskeyindia7/data_per_month/dataA_per_months.csv'
+            csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..',
+            'data/dataA_per_months.csv')
             df = pd.read_csv(csv_path, usecols=['PI_counts'])
             PI_counts = df['PI_counts'].astype(int).tolist()
             months = list(range(0, 30 * 19 + 1, 30)) # 1.5 yrs
@@ -57,7 +58,8 @@ class CPE_Model_month(Model):
             self.hospital_period = 7 # exp(1/lambda)
 
         elif data_type == 'B':
-            csv_path ='/home/whiskeyindia7/data_per_month/dataB_per_months.csv'
+            csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..',
+            'data/dataA_per_months.csv')
             df = pd.read_csv(csv_path, usecols=['PI_counts'])
             PI_counts = df['PI_counts'].astype(int).tolist()
             months = list(range(0, 30 * 36 + 1, 30)) # 3 yrs
@@ -66,7 +68,8 @@ class CPE_Model_month(Model):
 
 
         elif data_type == 'B_':
-            csv_path ='/home/whiskeyindia7/data_per_month/dataB_per_months.csv'
+            csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..',
+            'data/dataA_per_months.csv')
             df = pd.read_csv(csv_path, usecols=['PI_counts'])
             PI_counts = df['PI_counts'].astype(int).tolist()
             months = list(range(0, 30 * 30 + 1, 30)) # 2.5 yrs
