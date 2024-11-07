@@ -59,7 +59,7 @@ class CPE_Model_month(Model):
 
         elif data_type == 'B':
             csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..',
-            'data/dataA_per_months.csv')
+            'data/dataB_per_months.csv')
             df = pd.read_csv(csv_path, usecols=['PI_counts'])
             PI_counts = df['PI_counts'].astype(int).tolist()
             months = list(range(0, 30 * 36 + 1, 30)) # 3 yrs
@@ -69,7 +69,7 @@ class CPE_Model_month(Model):
 
         elif data_type == 'B_':
             csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','..',
-            'data/dataA_per_months.csv')
+            'data/dataB_per_months.csv')
             df = pd.read_csv(csv_path, usecols=['PI_counts'])
             PI_counts = df['PI_counts'].astype(int).tolist()
             months = list(range(0, 30 * 30 + 1, 30)) # 2.5 yrs
