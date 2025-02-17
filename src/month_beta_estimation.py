@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # %%
-data_type = 'B'
+data_type = 'A'
 num_iter = 50; np.int64(num_iter)
 
 # Parameters
@@ -20,7 +20,7 @@ cleanDay = 180
 washrate = 0.9
 isolationTime = 14
 
-runtime = 30*36 # dont forget change A : 30 * 19, B : 30 * 36
+runtime = 30*19 # dont forget change A : 30 * 19, B : 30 * 36
 probNewPatient = 0.003 # 0.053, Old Calibration # 1/2000, 2592 ticks per day
 probTransmission = 0.00005 # calibration result
 isolationFactor = 0.75 # fix
@@ -40,7 +40,7 @@ fixed_params = {
     }
 
 variable_name = 'prob_transmission'
-variable_value = [0.0101, 0.0121, 0.0141]
+variable_value = [0.0866]
 
 del fixed_params[variable_name]
 variable_params = {variable_name : variable_value}
@@ -87,16 +87,12 @@ emulated_data = df.values[0][0]
 print(emulated_data)
 
 csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/emulation_{}_1.csv'.format(data_type))
-csv_path1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/emulation_{}.csv'.format(data_type))
-
+    'result/emulation_beta_{}.csv'.format(data_type))
 if os.path.isfile(csv_path):
     saved_df = pd.read_csv(csv_path,index_col=0)
     saved_df.columns = variable_value
     df = pd.concat([saved_df,df], ignore_index=True)
 df.to_csv(csv_path)
-emulated_data.to_csv(csv_path1)
 print("done!!")
 
 
@@ -129,7 +125,7 @@ fixed_params = {
     }
 
 variable_name = 'prob_transmission'
-variable_value = [0.0101, 0.0121, 0.0141]
+variable_value = [0.0838]
 
 del fixed_params[variable_name]
 variable_params = {variable_name : variable_value}
@@ -176,15 +172,12 @@ emulated_data = df.values[0][0]
 print(emulated_data)
 
 csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/emulation_{}_1.csv'.format(data_type))
-csv_path1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-    'result/emulation_{}.csv'.format(data_type))
-
+    'result/emulation_beta_{}.csv'.format(data_type))
 if os.path.isfile(csv_path):
     saved_df = pd.read_csv(csv_path,index_col=0)
     saved_df.columns = variable_value
     df = pd.concat([saved_df,df], ignore_index=True)
 df.to_csv(csv_path)
-emulated_data.to_csv(csv_path1)
+
 print("done!!")
 # %%
