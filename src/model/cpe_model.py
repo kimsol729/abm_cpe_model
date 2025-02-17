@@ -127,7 +127,7 @@ class CPE_Model(Model):
         self.grid = MultiGrid(width, height, torus =False)
 
         self.ticks_in_hour = 1# 36 ticks to visit 3 patients, 3 cycles per hour
-        self.ticks_in_day = 24 * self.ticks_in_hour
+        self.ticks_in_day = 12 * self.ticks_in_hour
         self.day = 0
 
         self.schedule = BaseScheduler(self)
