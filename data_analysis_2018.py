@@ -9,7 +9,7 @@ import seaborn as sns
 
 # %% 2017-2018 data analysis
 current_directory = os.getcwd()
-file_path = 'data/2017_2018_data.csv'
+file_path = 'data/dataA.csv'
 data = pd.read_csv(file_path)
 
 # 날짜 형식 변경
@@ -21,13 +21,14 @@ data['result_report_date'] = data['result_report_date'].apply(convert_date)
 
 
 #%% load patients list
-number = 1
+
+# 필요한 정보 (환자 ID, 입원일, 퇴원일, 검사결과, 검사일)
 columns = ['P_ID', 'ICU_adm_date', 'ICU_dis_date', 'CRE_result', 'test_date']
 filt_data = pd.DataFrame(columns=columns)
 manual_data = pd.DataFrame()
 
-p_id = list(data['P_number'].astype(int).drop_duplicates())
-
+# 중복환자 처리 방법
+p_id = list(data['P_number'].astype(int).drop_duplicates()) 
 for patient in p_id:
     df = data[data['P_number'] == patient]
     df = df.sort_values(by='ICU_adm_date')
@@ -35,12 +36,28 @@ for patient in p_id:
     df = df.sort_values(by='result_report_date')
     n = len(df)
 
-    if len(df['CPE_result'].unique()) == 1:
+    if len(df['CPE_result'].unique()) == 1: 
+        """ 
+        CRE result가 모두 동일할 경우 CRE 결과는 입원당시 결과로 가져오고 연속입원 묶음.
+        
+        ex) 
+        [1] 11/6/17	11/12/17 timedelta = -6
+        [2] 11/6/17	11/12/17 timedelta = -6
+        [3] 11/6/17	11/12/17 timedelta = 151 (V) 1 보다 큰 경우
+        [4] 4/12/18	4/12/18 timedelta = 0
+        [5] 4/12/18	4/12/18 (V) n 번째
+
+
+        Filtering 
+
+        [1] 11/6/17 11/12/17
+        [2] 4/12/18 4/12/18
+        """
         adm_date = df['ICU_adm_date'].reset_index(drop=True).values
         dis_date = df['ICU_discharge_date'].reset_index(drop=True).values
         timedeltas = adm_date[1:]-dis_date[:-1]
         indices = [0] + list(np.where(timedeltas.astype('timedelta64[D]') > np.timedelta64(1, 'D'))[0] + 1) + [n]
-
+        
         for i in range(len(indices)-1):
             idx = indices[i]
             last_idx = indices[i+1]-1
@@ -57,8 +74,8 @@ for patient in p_id:
         manual_data = pd.concat([manual_data, df.reset_index(drop=True)], ignore_index=True)
 
 # manual_data와 filt_data를 엑셀 파일로 저장
-manual_data.to_excel('data/manual_data.xlsx', index=False)
-filt_data.to_excel('data/filt_data.xlsx', index=False)
+manual_data.to_excel('data/dataA_manual_data.xlsx', index=False)
+filt_data.to_excel('data/dataA_filt_data.xlsx', index=False)
 
 # %% 2017-2018 data analysis
 """
@@ -67,7 +84,7 @@ load filtered data 2017-2018
 
 """
 current_directory = os.getcwd()
-file_path = 'data/2017_filt_data.csv'
+file_path = 'data/dataA_combined.csv'
 data = pd.read_csv(file_path)
 #%%
 # ICU 재원 기간 계산 (ICU_dis_date - ICU_adm_date)
@@ -149,9 +166,8 @@ df['test'] = pd.to_datetime(df['test'])
 
 # 분석할 날짜 범위 설정
 start_date = pd.Timestamp('2017-01-01')
-end_date = pd.Timestamp('2019-01-01')
-date_ranges = pd.date_range(start=start_date, end=end_date, freq='6MS')
-
+end_date = pd.Timestamp('2018-08-01')
+date_ranges = pd.date_range(start=start_date, end=end_date, freq='1MS')
 #%% 기간별 입원 환자 수 확인
 
 num_ps = []
@@ -161,9 +177,20 @@ median_ps = []
 for i in range(len(date_ranges) - 1):
     start_range = date_ranges[i]
     end_range = date_ranges[i + 1]
-    num_p = ((df['in'] >= start_range) & (df['in'] < end_range)).sum()
-    mean_p = np.mean((df['out'] - df['in'])[((df['in'] >= start_range) & (df['in'] < end_range))].astype('timedelta64[D]'))
-    median_p = np.median((df['out'] - df['in'])[((df['in'] >= start_range) & (df['in'] < end_range))].astype('timedelta64[D]'))
+    # 입원 환자 수 계산
+    mask = (df['in'] >= start_range) & (df['in'] < end_range)
+    num_p = mask.sum()
+    # 입원 기간 계산 (timedelta64[ns] 타입으로 반환)
+    durations = (df['out'] - df['in'])[mask]
+    
+    # 기간을 일 단위로 변환
+    durations_days = durations.dt.days
+    
+    # 평균 및 중앙값 계산
+    mean_p = np.mean(durations_days) if len(durations_days) > 0 else np.nan
+    median_p = np.median(durations_days) if len(durations_days) > 0 else np.nan
+    
+    # 결과 저장
     num_ps.append(num_p)
     mean_ps.append(round(mean_p, 2))
     median_ps.append(round(median_p, 2))
@@ -187,7 +214,7 @@ print(num_cre)  # 각 기간별 입원 환자 수가 담긴 리스트 출력
 # 그래프 그리기
 plt.figure(figsize=(12,10))
 plt.subplot(211)
-for n in range(0, 4, 3):
+for n in range(3, 4, 3):
     date_n = pd.Timedelta(days=n)
 
     # P_I 계산
@@ -274,6 +301,21 @@ for n in range(3, 4, 3):
 plt.xticks(ticks=range(len(date_ranges)-1), labels=[date.strftime('%Y-%m') for date in date_ranges[:-1]], rotation=45)
 plt.legend()
 plt.show()
+
+#%%
+# 데이터프레임으로 변환
+date_labels = [date.strftime('%Y-%m') for date in date_ranges[:-1]]
+
+
+df_PI = pd.DataFrame(PI_counts, columns=['PI_counts'], index=date_labels)
+df_PHAI = pd.DataFrame(PHAI_counts, columns=['PHAI_counts'], index=date_labels)
+
+# 하나의 DataFrame으로 결합
+df_combined = pd.concat([df_PI, df_PHAI], axis=1)
+
+# CSV 파일로 저장
+df_combined.to_csv('data/dataA_per_months.csv', index=True)
+
 # %% 재원기간 평가
 # date_n과 date_m 변수 정의
 date_n = pd.Timedelta(days=3)

@@ -17,3 +17,4 @@ src/__pycache__/agents.cpython-310.pyc
 *.bbl
 *.gz
 doc/abm_cpe.toc
+.DS_Store

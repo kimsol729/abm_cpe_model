@@ -2,7 +2,7 @@
 from model.cpe_model import CPE_Model
 from model.cpe_model import getHCWInfec, getNumIsol
 from plot_distribution import dist_1v
-from mesa.batchrunner import BatchRunner
+from mesa.batchrunner import batch_run
 import os
 import time
 import pandas as pd

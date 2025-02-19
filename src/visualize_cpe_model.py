@@ -2,7 +2,7 @@
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.modules import ChartModule, TextElement
-from mesa.visualization.UserParam import UserSettableParameter
+from mesa.visualization.UserParam import Slider, Choice, StaticText
 from model.cpe_model import CPE_Model
 from model.agents import *
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ def agent_portrayal(agent):
                     "Filled": "true",
                     "r": 0.4}
     if agent.isPatient == True:
+
         # First start with Patients
         if agent.colonized == False:
                 portrayal["Color"] = "#666666" # 아프지 않은 환자
@@ -27,9 +28,9 @@ def agent_portrayal(agent):
             portrayal["Color"] = "#de1616"
             portrayal["Layer"] = 2
             portrayal["r"] = .3
-            if agent.isol_time > 0:
-                portrayal["text"] = f"Isol Time: {np.round(agent.isol_time/agent.model.ticks_in_day,2)}"
-                portrayal["Color"] = "#cd5c5c" # 격리실로 옮겨질 예정
+
+            # portrayal["text"] = f"gamma: {np.round(agent.stay/agent.model.ticks_in_day,2)}"
+            # 격리실로 옮겨질 예정
 
             # if agent.stay <= 4*agent.model.ticks_in_day and agent.stay > 2*agent.model.ticks_in_day:
             #     portrayal["Color"] = "#CD5C5C" # indianred
@@ -98,9 +99,9 @@ def agent_portrayal(agent):
         portrayal["w"] = .8 #width
         portrayal["h"] = .8 #height of rectangle
         if agent.colonized == True:
-            portrayal["Color"] = "#808000"
+            portrayal["Color"] = "#cfb574"
         else:
-            portrayal["Color"] = "#00FF00"
+            portrayal["Color"] = "#9ccedb"
 
     # if agent.isEnvironment == True:
     #     portrayal = {"Shape":"rect",
@@ -124,27 +125,29 @@ chart = ChartModule(
     # {"Label": "Total number of Patients", "Color": "#D2691E"},
     # {"Label": "Cumulative Patients", "Color": "#black"},
     {"Label": "HCW related infections", "Color": "black"},
-    {"Label": "Move to isolation", "Color": "#D2691E"}
+    # {"Label": "Move to isolation", "Color": "#D2691E"}
     ],
     data_collector_name="datacollector"
 )
 
 
 model_params = {
+    "inflow_date": Choice(
+        'Duration',
+        value='2022-1',
+        choices=['2017-1', '2017-2', '2018-1', '2021-1', '2021-2','2022-1' ,'2022-2']
+    ),
 
-    "prob_transmission": UserSettableParameter(
-        "slider", #param type
+    "prob_transmission": Slider(
         "Probability of transmission", #name
-        .1, #default value
-        0, # min value
+        0.5, #default value
+        0.1, # min value
         1, #max value
-        .1, # step
+        0.01, # step
         description="Probability of transmission",
     ),
 
-
-    "prob_new_patient": UserSettableParameter(
-        "slider", #param type
+    "prob_new_patient": Slider(
         "Probability of a admission of new patient", #name
         .1, #default value
         0, # min value
@@ -153,39 +156,25 @@ model_params = {
         description="Probability of a admission of new patient",
     ),
 
-
-    "prob_patient_sick": UserSettableParameter(
-        "slider", #param type
-        "Probability incoming patient is sick", #name
-        .01, #default value
-        0.005, # min value
-        .9, #max value
-        .01, # step
-        description="Probability that incoming patient is already sick",
-    ),
-
-    "isolation_factor": UserSettableParameter(
-        "slider", #param type
+    "isolation_factor": Slider(
         "Isolation factor", #name
-        .2, #default value
+        .8, #default value
         0, # min value
         1, #max value
         .1, # step
         description="How safe are the isolated beds?",
     ),
 
-    "hcw_wash_rate": UserSettableParameter(
-        "slider", #param type
+    "hcw_wash_rate": Slider(
         "Handwash probability (ICU worker)", #name
-        .9, #default value
+        .5, #default value
         .1, # min value
         1, #max value
         .05, # step
         #description="How many HCWs?",
     ),
 
-    "cleaningDay": UserSettableParameter(
-            "slider", #param type
+    "cleaningDay": Slider(
             "Days before cleaning", #name
             40, #default value
             10, # min value
@@ -194,8 +183,7 @@ model_params = {
             description="How often to wash hands?",
         ),
 
-      "isolation_time": UserSettableParameter(
-        "slider", #param type
+      "isolation_time": Slider(
         "Isolated Period for sick patients", #name
         14, #default value
         1, #min value
@@ -214,9 +202,6 @@ class TickCounter(TextElement):
 
 tick_counter = TickCounter()
 server = ModularServer(CPE_Model, [grid, chart, tick_counter], "CPE Model", model_params)
-# server = ModularServer(CPE_Model, [grid, chart], "CPE Model", model_params)
-server.port = 8517
+server.port = 8515
 server.launch()
-# %%
-
 # %%
