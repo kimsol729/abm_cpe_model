@@ -58,7 +58,6 @@ variable_value = [0.80, 0.90, 0.95, 0.99]
 # variable_name = 'isolation_time'
 # variable_value = [3, 7, 10, 14]
 for i in variable_value:
-    start_time = time.time()
     probNewPatient = 0.003
     isolationFactor = 0.75
     height=11
