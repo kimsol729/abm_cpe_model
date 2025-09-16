@@ -26,7 +26,7 @@ for type_ in ['A', 'B']:
         matrices = [interv1, interv2, interv3, interv4]
 
         for i, mat in enumerate(matrices):
-            pd.DataFrame(mat).to_csv(f'../result/intervention/figureNtable/matrix_{type_}_{intvn}_{labels[i]}.csv', index=False)
+            pd.DataFrame(mat).to_csv(f'matrix_{type_}_{intvn}_{labels[i]}.csv', index=False)
 
         plt.figure(figsize=(14, 8))
         for data, label in zip(matrices, labels):
@@ -74,27 +74,5 @@ for type_ in ['A', 'B']:
             ax.grid(True)
             ax.legend()
         plt.tight_layout()
-        plt.savefig(f'../result/intervention/figureNtable/boxplot_{type_}_{intvn}.png')
-        plt.close()
-
-
-        # ======== 원자료 median & IQR plot ========
-        plt.figure(figsize=(14, 8))
-        for data, label in zip(matrices, labels):
-            cumsum = np.cumsum(data, axis=1)
-            q2_vals = np.percentile(cumsum, 50, axis=0)
-            q1_vals = np.percentile(cumsum, 25, axis=0)
-            q3_vals = np.percentile(cumsum, 75, axis=0)
-            x = np.arange(length)
-            plt.plot(x, q2_vals, label=f'{label} median', linewidth=2)
-            plt.fill_between(x, q1_vals, q3_vals, alpha=0.2)
-
-        plt.xticks(ticks=np.arange(length), labels=x_labels, rotation=45)
-        plt.xlabel('Month')
-        plt.ylabel('Value')
-        plt.title(f'Raw Time Series - Type {type_} - {intvn}')
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.savefig(f'../result/intervention/figureNtable/lineplot_{type_}_{intvn}_raw.png')
+        plt.savefig(f'boxplot_{type_}_{intvn}.png')
         plt.close()

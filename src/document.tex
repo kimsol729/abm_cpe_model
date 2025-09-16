@@ -1,0 +1,61 @@
+\documentclass[8pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{kotex}
+
+\title{격리지연시간(Isolation) 시뮬레이션 분석}
+\author{}
+\date{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{평균의 관점}
+\small
+\begin{itemize}
+    \item A, B 두 시기 모두에서 10일 만에 격리실로 이동시키는 경우
+    환자가 가장 많이 발생
+    \item 오히려 14일로 지연되는 경우보다 많은 환자가 발생함
+\end{itemize}
+\end{frame}
+
+\begin{frame}{중간값의 관점 - 기간 A}
+\small
+\begin{itemize}
+    \item 격리지연이 3일일 때보다 7일일 때 최종 확진자가 \\약 48명으로
+    가장 작은 값
+    \item 격리지연 10일은 가장 빠르게 환자가 증가
+    \item 3일과 14일은 큰 차이 없이 비슷한 결과
+\end{itemize}
+\end{frame}
+
+\begin{frame}{중간값의 관점 - 기간 B}
+\small
+\begin{itemize}
+    \item 한 달 만에 모든 경우에서 28명의 환자가 \\발생하고
+    이후 추가 환자가 없어 변화 없음
+    \item (격리실과 일반실 모두 이미 감염되었기 \\때문에 격리 이동 불가로 추측)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Q1, Q3 범위 - 기간 A}
+\small
+\begin{itemize}
+    \item 4개월 후 상위 25\% 결과(Q3)가 약 30명 발생
+    \item 격리지연 10일은 상위 25\%에서 최종 약 80명까지 발생하며
+    가장 큰 값
+    \item 나머지 격리지연은 모두 비슷한 수준
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Q1, Q3 범위 - 기간 B}
+\small
+\begin{itemize}
+    \item Q3 값이 28명 이후 더 이상 증가하지 않는 경우가 절반 이상,
+    Median도 Q3와 같음
+    \item 상위 25\%에서는 최종 약 65명까지 늘어났으며,
+    격리지연 시간과 무관하게 같은 결과
+\end{itemize}
+\end{frame}
+
+\end{document}
